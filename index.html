@@ -13,7 +13,7 @@ body{padding:max(6px,env(safe-area-inset-top)) max(6px,env(safe-area-inset-right
 .topbar{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 9px;border:1px solid var(--line);border-radius:14px;background:rgba(20,25,32,.94)}
 .brand{font-weight:900;font-size:clamp(16px,4vw,24px);white-space:nowrap}.brand span{color:var(--accent)}
 .stats{display:flex;justify-content:flex-end;gap:4px;flex-wrap:wrap;font-size:11px;font-weight:800}
-.pill{padding:4px 7px;border-radius:999px;background:#252e39;border:1px solid #3d4857;white-space:nowrap}
+.pill{padding:4px 7px;border-radius:999px;background:#252e39;border:1px solid #3d4857;white-space:nowrap}.sound-toggle{padding:4px 8px;border-radius:999px;background:#252e39;color:#f5f7fb;border:1px solid #3d4857;box-shadow:none;font-size:11px}.sound-toggle:active{transform:none;box-shadow:none}
 .stage{position:relative;flex:1 1 auto;min-height:250px;overflow:hidden;border:1px solid var(--line);border-radius:16px;background:#d7d0bd;box-shadow:0 18px 50px rgba(0,0,0,.45)}
 canvas{display:block;width:100%;height:100%;touch-action:none}
 .overlay{position:absolute;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:16px;background:linear-gradient(rgba(15,20,27,.80),rgba(8,11,15,.95));overflow:auto}
@@ -38,9 +38,9 @@ button:active{transform:translateY(4px);box-shadow:0 2px 0 #a98918}
 .pause-btn{position:absolute;right:11px;top:11px;z-index:8;width:45px;height:45px;border-radius:50%;border:1px solid rgba(255,255,255,.22);background:rgba(30,38,49,.91);color:white;font-weight:900;font-size:18px;box-shadow:none;padding:0}
 .round-banner{position:absolute;left:50%;top:18%;transform:translate(-50%,-50%);z-index:9;pointer-events:none;text-align:center;font-size:clamp(26px,7vw,54px);font-weight:1000;color:#17202a;text-shadow:0 2px 0 #fff,0 0 12px #fff;opacity:0;transition:opacity .2s}
 .round-banner.show{opacity:1}
-.footer{flex:0 0 auto;text-align:center;font-size:10px;color:#8d99a8}
+.footer{flex:0 0 auto;display:flex;justify-content:space-between;gap:12px;font-size:10px;color:#8d99a8;padding:0 4px}.footer .release{text-align:right;white-space:nowrap}
 @media(min-width:800px){.mobile-controls,.pause-btn{display:none}}
-@media(max-width:680px){.upgrade-grid{grid-template-columns:1fr}.upgrade-card{min-height:100px}.card{padding:16px}}
+@media(max-width:680px){.upgrade-grid{grid-template-columns:1fr}.upgrade-card{min-height:100px}.card{padding:16px}.footer{font-size:9px}.footer>span:first-child{display:none}}
 @media(max-height:520px){.topbar{padding:4px 6px}.brand{font-size:15px}.pill{padding:2px 5px}.mobile-controls{bottom:5px}.card{padding:13px}p{margin:5px 0}.upgrade-card{min-height:90px}}
 </style>
 </head>
@@ -56,7 +56,7 @@ button:active{transform:translateY(4px);box-shadow:0 2px 0 #a98918}
       <div class="pill">Waffe <span id="weapon">keine</span></div>
       <div class="pill">Munition <span id="ammo">0</span></div>
       <div class="pill">Tempo <span id="speed">normal</span></div>
-      <div class="pill">Cheat <span id="cheat">aus</span></div>
+      <div class="pill hidden" id="cheatPill"><span id="cheat">Cheat an · 1 Senf · 2 Chili · 3 Tomate · 4 Pizza · 5 Welle</span></div><button class="sound-toggle" id="soundBtn" type="button" aria-label="Sound umschalten">🔊 Sound</button>
     </div>
   </div>
 
@@ -79,8 +79,8 @@ button:active{transform:translateY(4px);box-shadow:0 2px 0 #a98918}
       <div class="card">
         <h1>Discounter <b>Strike</b></h1>
         <p>Überstehe einzelne Runden und verbessere danach dauerhaft deinen Einkaufswagen.</p>
-        <p>Sammle Waffen-Power-ups: <b>Senfstrahl</b>, <b>Ketchup-Kanone</b> oder <b>Chili-Bombe</b>. Eine neu eingesammelte Waffe ersetzt automatisch die bisherige.</p>
-        <p><b>Desktop:</b> Pfeile/WASD, F zum Schießen, P für Pause.<br><b>iPhone:</b> Bildschirmtasten benutzen. Geheimcode: <b>IDDQD</b></p>
+        <p>Sammle Waffen-Power-ups: <b>Senfstrahl</b>, <b>Ketchup-Kanone</b>, <b>Chili-Bombe</b> oder <b>Pizza-Wurf</b>. Eine neu eingesammelte Waffe ersetzt automatisch die bisherige.</p><p>😈 Rabatt-Räuber fahren direkt, 🦹 Pfand-Piraten weichen aus und 👹 Kassen-Kobolde verfolgen deinen Einkaufswagen.</p>
+        <p><b>Desktop:</b> Pfeile/WASD, F oder Leertaste zum Schießen, P für Pause.<br><b>iPhone:</b> Bildschirmtasten benutzen.</p>
         <button id="startBtn" type="button">Spiel starten</button>
       </div>
     </div>
@@ -108,7 +108,7 @@ button:active{transform:translateY(4px);box-shadow:0 2px 0 #a98918}
       </div>
     </div>
   </div>
-  <div class="footer">Fiktives Arcade-Spiel ohne reale Marken oder Personen.</div>
+  <div class="footer"><span>Fiktives Arcade-Spiel ohne reale Marken oder Personen.</span><span class="release">Veröffentlicht: 18.07.2026, 12:52 Uhr</span></div>
 </div>
 
 <script>
@@ -124,6 +124,7 @@ var weaponEl=document.getElementById("weapon");
 var ammoEl=document.getElementById("ammo");
 var speedEl=document.getElementById("speed");
 var cheatEl=document.getElementById("cheat");
+var cheatPill=document.getElementById("cheatPill");
 var roundEl=document.getElementById("round");
 var progressEl=document.getElementById("progress");
 var startScreen=document.getElementById("startScreen");
@@ -133,6 +134,7 @@ var upgradeGrid=document.getElementById("upgradeGrid");
 var gameOverScreen=document.getElementById("gameOverScreen");
 var finalText=document.getElementById("finalText");
 var roundBanner=document.getElementById("roundBanner");
+var soundBtn=document.getElementById("soundBtn");
 
 var W=900,H=600,DPR=1;
 var running=false,paused=false,betweenRounds=false,lastTime=0;
@@ -142,8 +144,60 @@ var enemyTimer=.8,roundEndTimer=0;
 var speedBoostTimer=0,guaranteedWeaponTimer=5;
 var godMode=false,cheatBuffer="";
 var ramMultiplier=1,ammoMultiplier=1,fireRateMultiplier=1,puddleResistance=1;
+var upgradeLevels={speed:0,life:0,ammo:0,fire:0,ram:0,puddle:0};
 var enemies=[],shoppers=[],puddles=[],powerups=[],projectiles=[],chiliBombs=[],splats=[],particles=[],shelves=[];
 var keys={};
+var soundEnabled=true,audioCtx=null;
+function ensureAudio(){
+  if(!soundEnabled)return null;
+  if(!audioCtx){
+    var AudioContextClass=window.AudioContext||window.webkitAudioContext;
+    if(!AudioContextClass)return null;
+    audioCtx=new AudioContextClass();
+  }
+  if(audioCtx.state==="suspended")audioCtx.resume();
+  return audioCtx;
+}
+function tone(freq,duration,type,volume,endFreq,delay){
+  var ac=ensureAudio();if(!ac)return;
+  var start=ac.currentTime+(delay||0),osc=ac.createOscillator(),gain=ac.createGain();
+  osc.type=type||"square";
+  osc.frequency.setValueAtTime(Math.max(20,freq),start);
+  if(endFreq)osc.frequency.exponentialRampToValueAtTime(Math.max(20,endFreq),start+duration);
+  gain.gain.setValueAtTime(0.0001,start);
+  gain.gain.exponentialRampToValueAtTime(Math.max(.0001,volume||.05),start+.008);
+  gain.gain.exponentialRampToValueAtTime(.0001,start+duration);
+  osc.connect(gain);gain.connect(ac.destination);osc.start(start);osc.stop(start+duration+.02);
+}
+function noise(duration,volume){
+  var ac=ensureAudio();if(!ac)return;
+  var length=Math.max(1,Math.floor(ac.sampleRate*duration));
+  var buffer=ac.createBuffer(1,length,ac.sampleRate),data=buffer.getChannelData(0);
+  for(var i=0;i<length;i++)data[i]=Math.random()*2-1;
+  var src=ac.createBufferSource(),gain=ac.createGain(),filter=ac.createBiquadFilter();
+  src.buffer=buffer;filter.type="lowpass";filter.frequency.value=900;
+  gain.gain.setValueAtTime(volume||.04,ac.currentTime);
+  gain.gain.exponentialRampToValueAtTime(.0001,ac.currentTime+duration);
+  src.connect(filter);filter.connect(gain);gain.connect(ac.destination);src.start();
+}
+function playSound(name){
+  if(!soundEnabled)return;
+  if(name==="mustard"){tone(620,.08,"square",.035,850);}
+  else if(name==="ketchup"){tone(180,.14,"sawtooth",.05,90);}
+  else if(name==="chili"){tone(260,.11,"triangle",.045,520);}
+  else if(name==="pizza"){tone(440,.07,"triangle",.035,660);tone(660,.08,"triangle",.025,880,.05);}
+  else if(name==="wave"){tone(150,.28,"sine",.05,65);}
+  else if(name==="hit"){tone(120,.08,"square",.045,70);}
+  else if(name==="enemyDown"){tone(310,.09,"square",.045,180);tone(180,.11,"square",.035,90,.07);}
+  else if(name==="damage"){noise(.16,.065);tone(95,.18,"sawtooth",.05,55);}
+  else if(name==="pickup"){tone(520,.08,"sine",.035,760);tone(760,.10,"sine",.03,1040,.07);}
+  else if(name==="explosion"){noise(.32,.10);tone(95,.28,"sawtooth",.06,35);}
+  else if(name==="round"){tone(440,.10,"triangle",.04,660);tone(660,.12,"triangle",.04,880,.11);}
+}
+function updateSoundButton(){
+  soundBtn.textContent=soundEnabled?"🔊 Sound":"🔇 Stumm";
+}
+
 
 var player={
   x:75,y:250,w:62,h:40,baseSpeed:305,inv:0,facing:1,
@@ -152,8 +206,10 @@ var player={
 
 var weaponInfo={
   mustard:{name:"Senfstrahl",ammo:20,cooldown:.24},
+  chili:{name:"Chili-Bombe",ammo:7,cooldown:.85},
   ketchup:{name:"Ketchup-Kanone",ammo:12,cooldown:.52},
-  chili:{name:"Chili-Bombe",ammo:7,cooldown:.85}
+  pizza:{name:"Pizza-Wurf",ammo:9,cooldown:.72},
+  wave:{name:"Schallwelle",ammo:99,cooldown:.55}
 };
 
 var upgrades=[
@@ -198,6 +254,7 @@ function buildShelves(){
 function resetGame(){
   score=0;lives=3;maxLives=3;roundNo=1;
   ramMultiplier=1;ammoMultiplier=1;fireRateMultiplier=1;puddleResistance=1;
+  upgradeLevels={speed:0,life:0,ammo:0,fire:0,ram:0,puddle:0};
   player.baseSpeed=305;player.weapon=null;player.ammo=0;
   resetWorldForRound();
 }
@@ -219,13 +276,15 @@ function updateHud(){
   weaponEl.textContent=player.weapon?weaponInfo[player.weapon].name:"keine";
   ammoEl.textContent=player.ammo;
   speedEl.textContent=speedBoostTimer>0?speedBoostTimer.toFixed(1)+" s":"normal";
-  cheatEl.textContent=godMode?"IDDQD aktiv":"aus";
+  cheatEl.textContent="Cheat an";
+  cheatPill.classList.toggle("hidden",!godMode);
   roundEl.textContent=roundNo;
   progressEl.textContent=enemiesDefeated+"/"+enemiesToSpawn;
 }
 
 function showRoundBanner(text){
   roundBanner.textContent=text;roundBanner.classList.add("show");
+  playSound("round");
   window.setTimeout(function(){roundBanner.classList.remove("show");},1300);
 }
 
@@ -267,16 +326,70 @@ function burst(x,y,text,color){
   if(text)particles.push({x:x,y:y-18,vx:0,vy:-32,life:1,text:text,size:18,color:"#17202a"});
 }
 
+/*
+  Feste Gegner-Spawnpunkte pro Runde:
+  Die Kombination aus Rundennummer und Gegnernummer erzeugt immer dieselbe
+  Höhe. Eine andere Runde erhält eine andere, aber ebenfalls reproduzierbare
+  Abfolge. Positionen, die in einem Regal liegen, werden automatisch übersprungen.
+*/
+function seededSpawnValue(round,index,salt){
+  var x=(round*73856093)^(index*19349663)^((salt||0)*83492791);
+  x=(x^(x>>>13))*1274126177;
+  x=x^(x>>>16);
+  return (x>>>0)/4294967295;
+}
+function fixedEnemySpawnY(round,index){
+  var minY=48,maxY=H-48,step=34;
+  var candidates=[];
+  for(var y=minY;y<=maxY;y+=step){
+    if(!shelfHitsCircle(W+35,y,23))candidates.push(y);
+  }
+  if(!candidates.length)return H/2;
+
+  // Deterministische Fisher-Yates-Mischung für genau diese Runde.
+  for(var i=candidates.length-1;i>0;i--){
+    var j=Math.floor(seededSpawnValue(round,i,17)*(i+1));
+    var tmp=candidates[i];candidates[i]=candidates[j];candidates[j]=tmp;
+  }
+
+  // Nach einem vollständigen Durchlauf beginnt eine neue feste Variation.
+  var cycle=Math.floor(index/candidates.length);
+  var slot=index%candidates.length;
+  if(cycle>0){
+    slot=(slot+Math.floor(seededSpawnValue(round,cycle,29)*candidates.length))%candidates.length;
+  }
+  return candidates[slot];
+}
+
 function spawnEnemy(){
   var types=[
-    {emoji:"😈",name:"Rabatt-Räuber",pts:100,speed:76,hp:1},
-    {emoji:"🦹",name:"Pfand-Pirat",pts:150,speed:91,hp:2},
-    {emoji:"👹",name:"Kassen-Kobold",pts:210,speed:105,hp:3}
+    {id:"raider",emoji:"😈",name:"Rabatt-Räuber",pts:100,speed:76,hp:1},
+    {id:"pirate",emoji:"🦹",name:"Pfand-Pirat",pts:150,speed:91,hp:2},
+    {id:"goblin",emoji:"👹",name:"Kassen-Kobold",pts:210,speed:105,hp:3}
   ];
   var maxIndex=Math.min(types.length-1,Math.floor((roundNo-1)/2));
-  var t=types[Math.floor(Math.random()*(maxIndex+1))];
-  enemies.push({x:W+35,y:55+Math.random()*(H-110),r:22,vx:-(t.speed+roundNo*2.4),vy:(Math.random()-.5)*30,
-    emoji:t.emoji,name:t.name,pts:t.pts,hp:t.hp,maxHp:t.hp,hit:false,slow:0});
+  var typeIndex=Math.floor(seededSpawnValue(roundNo,enemiesSpawned,5)*(maxIndex+1));
+  var t=types[typeIndex];
+  var spawnY=fixedEnemySpawnY(roundNo,enemiesSpawned);
+  enemies.push({
+    x:W+35,
+    y:spawnY,
+    r:22,
+    baseSpeed:t.speed+roundNo*2.4,
+    vx:-(t.speed+roundNo*2.4),
+    vy:(seededSpawnValue(roundNo,enemiesSpawned,7)-.5)*30,
+    ai:t.id,
+    aiTimer:.45+seededSpawnValue(roundNo,enemiesSpawned,11)*.8,
+    targetY:fixedEnemySpawnY(roundNo,enemiesSpawned+3),
+    zigzagDir:seededSpawnValue(roundNo,enemiesSpawned,13)<.5?-1:1,
+    emoji:t.emoji,
+    name:t.name,
+    pts:t.pts,
+    hp:t.hp,
+    maxHp:t.hp,
+    hit:false,
+    slow:0
+  });
   enemiesSpawned++;
 }
 
@@ -292,7 +405,7 @@ function spawnExtra(){
   var roll=Math.random();
   if(roll<.34){
     var weaponRoll=Math.random();
-    var type=weaponRoll<.45?"mustard":(weaponRoll<.75?"ketchup":"chili");
+    var type=weaponRoll<.34?"mustard":(weaponRoll<.58?"ketchup":(weaponRoll<.80?"chili":"pizza"));
     powerups.push({x:W+35,y:safePowerupY(),r:23,vx:-70,type:type});
   }else if(roll<.46){
     powerups.push({x:W+35,y:safePowerupY(),r:22,vx:-74,type:"speed"});
@@ -308,12 +421,14 @@ function equipWeapon(type){
   player.ammo=Math.max(1,Math.round(weaponInfo[type].ammo*ammoMultiplier));
   guaranteedWeaponTimer=10;
   burst(player.x+player.w/2,player.y,weaponInfo[type].name+"!");
+  playSound("pickup");
   updateHud();
 }
 
 function shoot(){
   if(!running||paused||betweenRounds||!player.weapon||player.ammo<=0||player.shootCooldown>0){return;}
   var type=player.weapon,info=weaponInfo[type];
+  playSound(type);
   player.shootCooldown=info.cooldown*fireRateMultiplier;
   player.ammo--;
   var dir=player.facing===-1?1:-1;
@@ -325,6 +440,14 @@ function shoot(){
     projectiles.push({type:"ketchup",x:sx,y:sy,vx:dir*390,life:1.5,r:12,damage:2});
   }else if(type==="chili"){
     chiliBombs.push({x:sx,y:sy,startY:sy,vx:dir*245,vy:-185,gravity:440,life:.68,fuse:.38,state:"flying",r:11});
+  }else if(type==="pizza"){
+    var pizzaSpeed=355;
+    projectiles.push({type:"pizza",x:sx,y:sy,vx:pizzaSpeed,vy:0,life:1.35,r:24,damage:2,rotation:0});
+    projectiles.push({type:"pizza",x:sx,y:sy,vx:-pizzaSpeed,vy:0,life:1.35,r:24,damage:2,rotation:Math.PI});
+    projectiles.push({type:"pizza",x:sx,y:sy,vx:0,vy:-pizzaSpeed,life:1.35,r:24,damage:2,rotation:-Math.PI/2});
+    projectiles.push({type:"pizza",x:sx,y:sy,vx:0,vy:pizzaSpeed,life:1.35,r:24,damage:2,rotation:Math.PI/2});
+  }else if(type==="wave"){
+    projectiles.push({type:"wave",x:sx,y:sy,vx:dir*320,vy:0,life:1.0,r:20,damage:2,growth:180});
   }
   if(player.ammo<=0){player.weapon=null;}
   updateHud();
@@ -334,12 +457,18 @@ function damageEnemy(e,amount,label,knockDir){
   if(e.hit){return;}
   e.hp-=amount;
   if(e.hp<=0){
-    e.hit=true;enemiesDefeated++;
+    e.hit=true;
+    e.deathAge=0;
+    e.deathDuration=.62;
+    enemiesDefeated++;
     score+=e.pts;e.vx=(knockDir||1)*220;
+    e.vy=-35-Math.random()*45;
+    playSound("enemyDown");
     burst(e.x,e.y,label||("+"+e.pts));
     updateHud();
   }else{
     burst(e.x,e.y,"Treffer","#d22f2f");
+    playSound("hit");
   }
 }
 
@@ -347,6 +476,7 @@ function explodeChili(b){
   b.state="done";
   var radius=105;
   burst(b.x,b.y,"CHILI-BOOM!","#f2382f");
+  playSound("explosion");
   for(var i=0;i<28;i++)particles.push({x:b.x,y:b.y,vx:(Math.random()-.5)*390,vy:(Math.random()-.5)*390,life:.85,size:4+Math.random()*8,color:Math.random()<.5?"#ff3428":"#ff9d16"});
   for(i=0;i<enemies.length;i++){
     var e=enemies[i];
@@ -357,6 +487,7 @@ function explodeChili(b){
 }
 
 function damagePlayer(label){
+  playSound("damage");
   if(godMode){burst(player.x+30,player.y,"UNVERWUNDBAR");return;}
   if(player.inv>0){return;}
   lives--;player.inv=1.4;burst(player.x+30,player.y,label);updateHud();
@@ -383,6 +514,7 @@ function beginUpgradeSelection(){
 }
 
 function applyUpgrade(id){
+  upgradeLevels[id]=(upgradeLevels[id]||0)+1;
   if(id==="speed"){player.baseSpeed*=1.12;}
   else if(id==="life"){maxLives++;lives=maxLives;}
   else if(id==="ammo"){ammoMultiplier*=1.30;}
@@ -391,6 +523,17 @@ function applyUpgrade(id){
   else if(id==="puddle"){puddleResistance*=.72;}
   upgradeScreen.classList.add("hidden");
   roundNo++;resetWorldForRound();lastTime=performance.now();
+}
+
+function cheatAssignWeapon(number){
+  if(!godMode)return;
+  var map={1:"mustard",2:"chili",3:"ketchup",4:"pizza",5:"wave"};
+  var type=map[number];
+  if(!type)return;
+  equipWeapon(type);
+  player.ammo=type==="wave"?99:Math.max(player.ammo,Math.round(weaponInfo[type].ammo*ammoMultiplier));
+  burst(player.x+player.w/2,player.y-18,"CHEAT: "+weaponInfo[type].name);
+  updateHud();
 }
 
 function update(dt){
@@ -402,7 +545,7 @@ function update(dt){
   if(guaranteedWeaponTimer<=0&&!player.weapon){
     var hasWeapon=false;
     for(var pp=0;pp<powerups.length;pp++){
-      if(powerups[pp].type==="mustard"||powerups[pp].type==="ketchup"||powerups[pp].type==="chili"){hasWeapon=true;break;}
+      if(powerups[pp].type==="mustard"||powerups[pp].type==="ketchup"||powerups[pp].type==="chili"||powerups[pp].type==="pizza"){hasWeapon=true;break;}
     }
     if(!hasWeapon)powerups.push({x:W+35,y:safePowerupY(),r:23,vx:-67,type:"mustard"});
     guaranteedWeaponTimer=9;
@@ -412,7 +555,7 @@ function update(dt){
   if(keys.ArrowRight||keys.d){dx++}if(keys.ArrowLeft||keys.a){dx--}
   if(keys.ArrowDown||keys.s){dy++}if(keys.ArrowUp||keys.w){dy--}
   if(dx||dy){var len=Math.sqrt(dx*dx+dy*dy);dx/=len;dy/=len;if(dx!==0)player.facing=dx>0?-1:1;}
-  if(keys.Shoot||keys.f||keys.F){shoot();}
+  if(keys.Shoot||keys.f||keys.F||keys[" "]||keys.Spacebar){shoot();}
 
   var slow=1;
   for(var pi=0;pi<puddles.length;pi++){
@@ -438,13 +581,82 @@ function update(dt){
   var i,e,nextX,nextY;
   for(i=0;i<enemies.length;i++){
     e=enemies[i];
-    if(e.hit){e.x+=e.vx*dt;continue;}
+    if(e.hit){
+      e.deathAge=(e.deathAge||0)+dt;
+      e.x+=e.vx*dt;
+      e.y+=(e.vy||0)*dt;
+      e.vx*=Math.pow(.90,dt*60);
+      e.vy=(e.vy||0)+85*dt;
+      continue;
+    }
     if(e.slow>0){e.slow-=dt;}
     var factor=e.slow>0?.46:1;
-    nextX=e.x+e.vx*factor*dt;nextY=e.y+e.vy*factor*dt;
-    if(!shelfHitsCircle(nextX,e.y,e.r))e.x=nextX;else e.vx*=-1;
-    if(!shelfHitsCircle(e.x,nextY,e.r))e.y=nextY;else e.vy*=-1;
-    if(e.y<35||e.y>H-35)e.vy*=-1;
+    e.aiTimer-=dt;
+
+    /*
+      Unterschiedliche Gegner-KI:
+      Rabatt-Räuber: geradlinig und berechenbar.
+      Pfand-Pirat: schnelle Zickzack-Bewegung und Ausweichen vor dem Wagen.
+      Kassen-Kobold: verfolgt aktiv die Höhe des Spielers und umgeht Regale.
+    */
+    if(e.ai==="raider"){
+      e.vx=-Math.abs(e.baseSpeed);
+      e.vy*=.94;
+    }else if(e.ai==="pirate"){
+      if(e.aiTimer<=0){
+        e.aiTimer=.35+Math.random()*.55;
+        e.zigzagDir*=-1;
+      }
+      var playerCenterY=player.y+player.h/2;
+      var closeToPlayer=Math.abs(e.x-(player.x+player.w/2))<210;
+      var evadeDir=e.y<playerCenterY?-1:1;
+      e.vx=-Math.abs(e.baseSpeed*1.08);
+      e.vy=(closeToPlayer?evadeDir:e.zigzagDir)*(80+roundNo*2);
+    }else if(e.ai==="goblin"){
+      if(e.aiTimer<=0){
+        e.aiTimer=.18;
+        e.targetY=player.y+player.h/2;
+      }
+      var diff=e.targetY-e.y;
+      e.vx=-Math.abs(e.baseSpeed*.92);
+      e.vy=Math.max(-100,Math.min(100,diff*2.2));
+    }
+
+    nextX=e.x+e.vx*factor*dt;
+    nextY=e.y+e.vy*factor*dt;
+
+    if(!shelfHitsCircle(nextX,e.y,e.r)){
+      e.x=nextX;
+    }else{
+      e.vx=-Math.abs(e.baseSpeed);
+      var upFree=!shelfHitsCircle(e.x,e.y-55,e.r);
+      var downFree=!shelfHitsCircle(e.x,e.y+55,e.r);
+      if(upFree&&downFree){
+        if(e.ai==="goblin"){
+          e.vy=(player.y+player.h/2<e.y?-1:1)*95;
+        }else{
+          e.vy=(Math.random()<.5?-1:1)*90;
+        }
+      }else if(upFree){
+        e.vy=-95;
+      }else if(downFree){
+        e.vy=95;
+      }else{
+        e.vy=-e.vy||90;
+      }
+      var bypassY=e.y+(e.vy>0?1:-1)*78*dt;
+      if(!shelfHitsCircle(e.x,bypassY,e.r))e.y=bypassY;
+    }
+
+    if(!shelfHitsCircle(e.x,nextY,e.r)){
+      e.y=nextY;
+    }else{
+      e.vy*=-1;
+      e.aiTimer=.12;
+    }
+
+    if(e.y<35){e.y=35;e.vy=Math.abs(e.vy||45);}
+    if(e.y>H-35){e.y=H-35;e.vy=-Math.abs(e.vy||45);}
   }
 
   for(i=0;i<shoppers.length;i++)shoppers[i].x+=shoppers[i].vx*dt;
@@ -452,7 +664,7 @@ function update(dt){
   for(i=0;i<powerups.length;i++)powerups[i].x+=powerups[i].vx*dt;
 
   for(i=0;i<projectiles.length;i++){
-    var pr=projectiles[i];pr.x+=pr.vx*dt;pr.life-=dt;
+    var pr=projectiles[i];pr.x+=pr.vx*dt;pr.y+=(pr.vy||0)*dt;pr.life-=dt;if(pr.type==="pizza")pr.rotation+=dt*7;if(pr.type==="wave")pr.r+=pr.growth*dt;
     if(pr.type==="ketchup"&&shelfHitsCircle(pr.x,pr.y,pr.r)){pr.life=0;splats.push({x:pr.x,y:pr.y,r:54,life:4});burst(pr.x,pr.y,"KLEBRIG!","#d22f2f");}
   }
 
@@ -499,7 +711,14 @@ function update(dt){
 
   for(i=0;i<shoppers.length;i++){
     var sh=shoppers[i];
-    if(!sh.hit&&rectCircle(player.x,player.y,player.w,player.h,sh.x,sh.y,sh.r)){sh.hit=true;sh.vx=170;damagePlayer("Kundschaft!");}
+    if(!sh.hit&&rectCircle(player.x,player.y,player.w,player.h,sh.x,sh.y,sh.r)){
+      sh.hit=true;
+      sh.vx=170;
+      score=Math.max(0,score-100);
+      burst(sh.x,sh.y,"-100 PUNKTE","#b00020");
+      damagePlayer("Kundschaft!");
+      updateHud();
+    }
   }
 
   for(i=0;i<projectiles.length;i++){
@@ -513,7 +732,21 @@ function update(dt){
       }else hit=distance(pr.x,pr.y,e.x,e.y)<pr.r+e.r;
       if(hit){
         pr.life=0;
-        if(pr.type==="ketchup"){
+        if(pr.type==="wave"){
+          damageEnemy(e,2,"WELLE +"+e.pts,(pr.vx||0)>=0?1:-1);
+        }else if(pr.type==="wave"){
+      ctx.save();
+      ctx.strokeStyle="#59d7ff";
+      ctx.lineWidth=4;
+      ctx.beginPath();
+      var a1=(pr.vx>=0)?-Math.PI/2:Math.PI/2;
+      var a2=(pr.vx>=0)?Math.PI/2:3*Math.PI/2;
+      ctx.arc(pr.x,pr.y,pr.r,a1,a2);
+      ctx.stroke();
+      ctx.restore();
+    }else if(pr.type==="pizza"){
+          damageEnemy(e,2,"PIZZA +"+e.pts,(pr.vx||0)>=0?1:-1);
+        }else if(pr.type==="ketchup"){
           splats.push({x:pr.x,y:pr.y,r:58,life:4});
           damageEnemy(e,2,"KETCHUP +"+e.pts,pr.vx>0?1:-1);
         }else damageEnemy(e,1,"SENF +"+e.pts,pr.vx>0?1:-1);
@@ -522,11 +755,22 @@ function update(dt){
     }
   }
 
-  enemies=enemies.filter(function(x){return x.x>-100&&x.x<W+120;});
+  enemies=enemies.filter(function(x){
+    if(x.hit){
+      return (x.deathAge||0)<(x.deathDuration||.62);
+    }
+    if(x.x>W+140){
+      x.hit=true;
+      enemiesDefeated++;
+      updateHud();
+      return false;
+    }
+    return x.x>-100&&x.x<W+140;
+  });
   shoppers=shoppers.filter(function(x){return x.x>-75&&x.x<W+90;});
   puddles=puddles.filter(function(x){return x.x>-75;});
   powerups=powerups.filter(function(x){return !x.hit&&x.x>-75;});
-  projectiles=projectiles.filter(function(x){return x.life>0&&x.x>-40&&x.x<W+40;});
+  projectiles=projectiles.filter(function(x){return x.life>0&&x.x>-40&&x.x<W+40&&x.y>-40&&x.y<H+40;});
   chiliBombs=chiliBombs.filter(function(x){return x.state!=="done";});
   splats=splats.filter(function(x){return x.life>0;});
   particles=particles.filter(function(x){return x.life>0;});
@@ -536,7 +780,7 @@ function update(dt){
     if(roundEndTimer>.75)beginUpgradeSelection();
   }
 
-  score+=dt*2;updateHud();
+  updateHud();
 }
 
 function draw(){
@@ -582,6 +826,22 @@ function draw(){
       var dir=pr.vx>0?1:-1;ctx.save();ctx.strokeStyle="#e0b514";ctx.lineWidth=8;ctx.lineCap="round";
       ctx.beginPath();ctx.moveTo(pr.x-dir*pr.length,pr.y);ctx.lineTo(pr.x,pr.y);ctx.stroke();
       ctx.strokeStyle="#ffe66a";ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(pr.x-dir*pr.length,pr.y-1);ctx.lineTo(pr.x,pr.y-1);ctx.stroke();ctx.restore();
+    }else if(pr.type==="wave"){
+      ctx.save();
+      ctx.strokeStyle="#59d7ff";
+      ctx.lineWidth=4;
+      ctx.beginPath();
+      var a1=(pr.vx>=0)?-Math.PI/2:Math.PI/2;
+      var a2=(pr.vx>=0)?Math.PI/2:3*Math.PI/2;
+      ctx.arc(pr.x,pr.y,pr.r,a1,a2);
+      ctx.stroke();
+      ctx.restore();
+    }else if(pr.type==="pizza"){
+      ctx.save();ctx.translate(pr.x,pr.y);ctx.rotate(pr.rotation||0);
+      ctx.fillStyle="#efb84b";ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,pr.r,-Math.PI/2,0);ctx.closePath();ctx.fill();
+      ctx.strokeStyle="#a86620";ctx.lineWidth=5;ctx.beginPath();ctx.arc(0,0,pr.r,-Math.PI/2,0);ctx.stroke();
+      ctx.fillStyle="#d72a2a";ctx.beginPath();ctx.arc(5,-5,2.5,0,Math.PI*2);ctx.fill();
+      ctx.restore();
     }else{
       ctx.fillStyle="#d51f2b";ctx.beginPath();ctx.arc(pr.x,pr.y,pr.r,0,Math.PI*2);ctx.fill();
       ctx.fillStyle="#ff6b70";ctx.beginPath();ctx.arc(pr.x-3,pr.y-3,pr.r*.35,0,Math.PI*2);ctx.fill();
@@ -596,12 +856,41 @@ function draw(){
   for(i=0;i<shoppers.length;i++){ctx.font="38px sans-serif";ctx.fillText(shoppers[i].emoji,shoppers[i].x,shoppers[i].y);}
 
   for(i=0;i<enemies.length;i++){
-    var e=enemies[i];ctx.save();ctx.translate(e.x,e.y);if(e.hit)ctx.rotate(.7);
-    if(e.slow>0){ctx.fillStyle="rgba(200,20,30,.25)";ctx.beginPath();ctx.arc(0,0,e.r+7,0,Math.PI*2);ctx.fill();}
-    ctx.font="42px sans-serif";ctx.fillText(e.emoji,0,0);ctx.restore();
+    var e=enemies[i];
+    ctx.save();
+    ctx.translate(e.x,e.y);
+
+    if(e.hit){
+      var deathProgress=Math.min(1,(e.deathAge||0)/(e.deathDuration||.62));
+      var fadeStart=.18;
+      var fadeProgress=Math.max(0,(deathProgress-fadeStart)/(1-fadeStart));
+      ctx.globalAlpha=1-fadeProgress;
+      ctx.rotate(.25+deathProgress*1.15);
+      var deathScale=1-deathProgress*.55;
+      ctx.scale(deathScale,deathScale);
+    }
+
+    if(e.slow>0&&!e.hit){
+      ctx.fillStyle="rgba(200,20,30,.25)";
+      ctx.beginPath();
+      ctx.arc(0,0,e.r+7,0,Math.PI*2);
+      ctx.fill();
+    }
+
+    ctx.font="42px sans-serif";
+    ctx.fillText(e.emoji,0,0);
+    ctx.restore();
+
     if(!e.hit){
-      ctx.fillStyle="#7b0010";ctx.font="bold 11px sans-serif";ctx.fillText(e.name,e.x,e.y+30);
-      if(e.maxHp>1){ctx.fillStyle="#222";ctx.fillRect(e.x-18,e.y-30,36,5);ctx.fillStyle="#d22f2f";ctx.fillRect(e.x-18,e.y-30,36*(e.hp/e.maxHp),5);}
+      ctx.fillStyle="#7b0010";
+      ctx.font="bold 11px sans-serif";
+      ctx.fillText(e.name,e.x,e.y+30);
+      if(e.maxHp>1){
+        ctx.fillStyle="#222";
+        ctx.fillRect(e.x-18,e.y-30,36,5);
+        ctx.fillStyle="#d22f2f";
+        ctx.fillRect(e.x-18,e.y-30,36*(e.hp/e.maxHp),5);
+      }
     }
   }
 
@@ -609,9 +898,40 @@ function draw(){
   ctx.translate(player.x+player.w/2,player.y+player.h/2);ctx.scale(player.facing,1);
   fillRoundRect(-27,-15,48,28,6,"#d11d35");ctx.strokeStyle="#1c242d";ctx.lineWidth=4;
   ctx.beginPath();ctx.moveTo(18,-13);ctx.lineTo(29,-20);ctx.lineTo(33,-20);ctx.stroke();
+
+  // Turbo-Räder: blaues Leuchten hinter den Reifen.
+  if(upgradeLevels.speed>0){
+    ctx.save();ctx.shadowColor="#2f9dff";ctx.shadowBlur=10+upgradeLevels.speed*3;
+    ctx.fillStyle="#42a5ff";ctx.beginPath();ctx.arc(-15,18,8,0,Math.PI*2);ctx.arc(16,18,8,0,Math.PI*2);ctx.fill();ctx.restore();
+  }
+
   ctx.fillStyle="#252b32";ctx.beginPath();ctx.arc(-15,18,6,0,Math.PI*2);ctx.arc(16,18,6,0,Math.PI*2);ctx.fill();
+
+  // Profilreifen: sichtbare helle Profilstriche auf beiden Reifen.
+  if(upgradeLevels.puddle>0){
+    ctx.strokeStyle="#d7dde4";ctx.lineWidth=1.5;
+    for(var tread=-3;tread<=3;tread+=3){
+      ctx.beginPath();ctx.moveTo(-19,18+tread);ctx.lineTo(-11,16+tread);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(12,18+tread);ctx.lineTo(20,16+tread);ctx.stroke();
+    }
+  }
+
   ctx.font="22px sans-serif";ctx.fillText("🛒",0,-2);
-  if(player.weapon){ctx.font="19px sans-serif";ctx.fillText(player.weapon==="mustard"?"🟡":player.weapon==="ketchup"?"🍅":"🌶️",19,-22);}
+
+  // Größerer Korb: Pluszeichen im Wagenkorb.
+  if(upgradeLevels.ammo>0){
+    ctx.fillStyle="#ffffff";ctx.font="900 15px sans-serif";ctx.fillText("+",0,-2);
+  }
+
+  // Stahlstoßstange: stabiler Metallbügel vorne am Wagen.
+  if(upgradeLevels.ram>0){
+    ctx.strokeStyle="#b9c1c9";ctx.lineWidth=5;
+    ctx.beginPath();ctx.moveTo(-31,-12);ctx.lineTo(-35,-12);ctx.lineTo(-35,12);ctx.lineTo(-31,12);ctx.stroke();
+    ctx.strokeStyle="#eef2f5";ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(-36,-9);ctx.lineTo(-36,9);ctx.stroke();
+  }
+
+  if(player.weapon){ctx.font="19px sans-serif";ctx.fillText(player.weapon==="mustard"?"🟡":player.weapon==="ketchup"?"🍅":player.weapon==="chili"?"🌶️":player.weapon==="pizza"?"🍕":"〰️",19,-22);}
   ctx.restore();
 
   for(i=0;i<particles.length;i++){
@@ -631,18 +951,34 @@ function loop(t){
 
 function setKey(name,value){keys[name]=value;if(name==="Shoot"&&value)shoot();}
 
-document.getElementById("startBtn").addEventListener("click",startGame,false);
+document.getElementById("startBtn").addEventListener("click",function(){ensureAudio();startGame();},false);
 document.getElementById("restartBtn").addEventListener("click",startGame,false);
 document.getElementById("pauseBtn").addEventListener("click",togglePause,false);
+soundBtn.addEventListener("click",function(){
+  soundEnabled=!soundEnabled;
+  if(soundEnabled){ensureAudio();playSound("pickup");}
+  updateSoundButton();
+},false);
+updateSoundButton();
 
 window.addEventListener("keydown",function(e){
   var key=e.key,lower=(key||"").toLowerCase();
   if(lower==="p"&&!e.repeat){togglePause();e.preventDefault();return;}
+  if((key===" "||key==="Spacebar")&&!e.repeat){ensureAudio();shoot();e.preventDefault();}
+  if(godMode&&!e.repeat&&["1","2","3","4","5"].indexOf(key)!==-1){
+    cheatAssignWeapon(key);
+    e.preventDefault();
+    return;
+  }
   if(key&&key.length===1){
     cheatBuffer=(cheatBuffer+lower).slice(-5);
     if(cheatBuffer==="iddqd"){
-      godMode=!godMode;cheatBuffer="";if(godMode)lives=Math.max(lives,maxLives);
-      burst(player.x+player.w/2,player.y,godMode?"IDDQD AN":"IDDQD AUS");updateHud();
+      godMode=!godMode;cheatBuffer="";
+      if(godMode){
+        lives=Math.max(lives,maxLives);
+        burst(player.x+player.w/2,player.y,"CHEAT AN");
+      }
+      updateHud();
     }
   }
   keys[key]=true;
