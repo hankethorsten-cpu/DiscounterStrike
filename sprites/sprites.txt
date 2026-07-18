@@ -76,3 +76,13 @@ upgrades/
     ammo.png                48x48
     ram.png                 48x48
     puddle.png              48x48
+
+shoppers/
+    cart_man.png            64x64
+    cart_woman.png          64x64
+    basket_man.png          64x64
+    bag_woman.png           64x64
+    senior_man.png          64x64
+    senior_woman.png        64x64
+    worker.png              64x64
+    parent_child.png        64x64

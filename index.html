@@ -9,12 +9,17 @@
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:radial-gradient(circle at top,#263242,#10141a 68%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;touch-action:none}
 body{padding:max(6px,env(safe-area-inset-top)) max(6px,env(safe-area-inset-right)) max(6px,env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-left))}
-.app{width:100%;height:100%;max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:8px}
-.topbar{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 9px;border:1px solid var(--line);border-radius:14px;background:rgba(20,25,32,.94)}
-.brand{font-weight:900;font-size:clamp(16px,4vw,24px);white-space:nowrap}.brand span{color:var(--accent)}
-.stats{display:flex;justify-content:flex-end;gap:4px;flex-wrap:wrap;font-size:11px;font-weight:800}
-.pill{padding:4px 7px;border-radius:999px;background:#252e39;border:1px solid #3d4857;white-space:nowrap}.sound-toggle{padding:4px 8px;border-radius:999px;background:#252e39;color:#f5f7fb;border:1px solid #3d4857;box-shadow:none;font-size:11px}.sound-toggle:active{transform:none;box-shadow:none}
-.stage{position:relative;flex:1 1 auto;min-height:250px;overflow:hidden;border:1px solid var(--line);border-radius:16px;background:#d7d0bd;box-shadow:0 18px 50px rgba(0,0,0,.45)}
+.app{width:100%;height:100%;max-width:1500px;margin:0 auto;display:flex;flex-direction:column;gap:6px}
+.topbar{flex:0 0 auto;display:grid;grid-template-columns:minmax(150px,1fr) minmax(280px,2fr) minmax(170px,1fr);align-items:center;gap:12px;padding:10px 18px;border:2px solid #242424;border-radius:4px;background:linear-gradient(#111416,#070809);box-shadow:0 4px 0 #000;font-family:"Courier New",Consolas,monospace}
+.brand{text-align:center;font-weight:1000;font-size:clamp(24px,3.4vw,48px);line-height:1;letter-spacing:2px;text-transform:uppercase;color:#ffb400;text-shadow:3px 3px 0 #713f00,-1px -1px 0 #ffe078;white-space:nowrap}.brand span{color:inherit}
+.retro-lives{display:flex;align-items:center;gap:7px;min-height:34px}
+.retro-lives img{width:34px;height:34px;display:block;object-fit:contain;image-rendering:pixelated;filter:drop-shadow(2px 3px 0 #000)}
+.retro-lives .god-life{font-size:34px;color:#fff;font-weight:1000;text-shadow:2px 2px 0 #000}
+.retro-score{text-align:right;color:#fff;font-weight:1000;font-size:clamp(16px,1.7vw,23px);line-height:1.25;letter-spacing:1px;text-shadow:2px 2px 0 #000;white-space:nowrap}
+.retro-score span{display:inline-block;min-width:7ch;text-align:right}
+.stats{flex:0 0 auto;display:flex;justify-content:center;align-items:center;gap:6px;flex-wrap:wrap;padding:3px 6px;font-size:11px;font-weight:900;font-family:"Courier New",Consolas,monospace}
+.pill{padding:4px 8px;border-radius:3px;background:#20262d;border:1px solid #3d4857;white-space:nowrap}.sound-toggle{padding:4px 8px;border-radius:3px;background:#20262d;color:#f5f7fb;border:1px solid #3d4857;box-shadow:none;font-size:11px}.sound-toggle:active{transform:none;box-shadow:none}
+.stage{position:relative;flex:1 1 auto;min-height:280px;overflow:hidden;border:2px solid #24282d;border-radius:4px;background:#d7d0bd;box-shadow:0 12px 36px rgba(0,0,0,.42)}
 canvas{display:block;width:100%;height:100%;touch-action:none}
 .overlay{position:absolute;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:16px;background:linear-gradient(rgba(15,20,27,.80),rgba(8,11,15,.95));overflow:auto}
 .overlay.hidden{display:none}
@@ -42,6 +47,10 @@ button:active{transform:translateY(4px);box-shadow:0 2px 0 #a98918}
 .pause-btn{position:absolute;right:11px;top:11px;z-index:8;width:45px;height:45px;border-radius:50%;border:1px solid rgba(255,255,255,.22);background:rgba(30,38,49,.91);color:white;font-weight:900;font-size:18px;box-shadow:none;padding:0}
 .round-banner{position:absolute;left:50%;top:18%;transform:translate(-50%,-50%);z-index:9;pointer-events:none;text-align:center;font-size:clamp(26px,7vw,54px);font-weight:1000;color:#17202a;text-shadow:0 2px 0 #fff,0 0 12px #fff;opacity:0;transition:opacity .2s}
 .round-banner.show{opacity:1}
+.stage-clear{position:absolute;inset:0;z-index:14;display:flex;align-items:center;justify-content:center;pointer-events:none;background:rgba(0,0,0,0);opacity:0;visibility:hidden;transition:background .32s ease,opacity .18s ease,visibility 0s linear .32s}
+.stage-clear.show{visibility:visible;opacity:1;background:rgba(0,0,0,.32);transition:background .32s ease,opacity .18s ease}
+.stage-clear-text{padding:18px 28px;text-align:center;color:#fff;font-family:"Courier New",Consolas,monospace;font-size:clamp(30px,7vw,68px);font-weight:1000;line-height:1.05;text-transform:uppercase;letter-spacing:1px;text-shadow:4px 4px 0 #000,0 0 18px rgba(255,213,74,.7);transform:scale(.86);opacity:0;transition:transform .28s cubic-bezier(.2,.85,.25,1.2),opacity .2s ease}
+.stage-clear.show .stage-clear-text{transform:scale(1);opacity:1}
 .footer{flex:0 0 auto;display:flex;justify-content:space-between;gap:12px;font-size:10px;color:#8d99a8;padding:0 4px}.footer .release{text-align:right;white-space:nowrap}
 @media(min-width:800px){.mobile-controls,.pause-btn{display:none}}
 @media(max-width:680px){.start-grid{grid-template-columns:1fr}.start-box{padding:12px 14px}.upgrade-grid{grid-template-columns:1fr}.upgrade-card{min-height:100px}.card{padding:16px}.footer{font-size:9px}.footer>span:first-child{display:none}}
@@ -102,30 +111,71 @@ button:active{transform:translateY(4px);box-shadow:0 2px 0 #a98918}
 .mode-option input:checked+.mode-card{border-color:#d11d35;background:#fff0f2;box-shadow:0 0 0 3px rgba(209,29,53,.12)}
 .mode-option input:focus-visible+.mode-card{outline:3px solid #2f9dff;outline-offset:2px}
 @media(max-width:620px){.mode-select{grid-template-columns:1fr}}
+
+.logo-splash{position:absolute;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;background:#0b1017;cursor:pointer}
+.logo-splash.hidden{display:none}
+.logo-splash img{width:min(92%,980px);max-height:92%;object-fit:contain;box-shadow:0 18px 70px rgba(0,0,0,.55);border-radius:18px}
+.logo-splash-hint{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);padding:9px 16px;border-radius:999px;background:rgba(10,14,20,.82);color:#fff;font-weight:900;letter-spacing:.04em}
+.life-display{display:flex}.life-display img{display:block}.life-display .god-life{display:inline-block}
+.boss-hud{position:absolute;left:50%;top:16px;transform:translateX(-50%);z-index:11;width:min(58%,540px);padding:9px 12px;border-radius:15px;background:rgba(18,23,30,.94);border:2px solid #ffcf33;box-shadow:0 5px 22px rgba(0,0,0,.4);pointer-events:none}
+.boss-hud.hidden{display:none}
+.boss-hud-name{display:flex;justify-content:space-between;gap:12px;color:#fff;font-weight:1000;font-size:15px;margin-bottom:6px}
+.boss-hud-track{height:18px;border-radius:999px;background:#3d4652;overflow:hidden;border:1px solid rgba(255,255,255,.25)}
+.boss-hud-fill{height:100%;width:100%;background:linear-gradient(90deg,#d11d35,#ff693d,#ffcf33);transition:width .15s linear}
+@media(max-width:760px){
+  .topbar{grid-template-columns:1fr auto 1fr;padding:8px 9px;gap:5px}
+  .brand{font-size:clamp(17px,5vw,27px);letter-spacing:0}
+  .retro-lives{gap:3px}.retro-lives img{width:24px;height:24px}
+  .retro-score{font-size:12px}.retro-score span{min-width:5ch}
+  .boss-hud{width:72%;top:10px}.logo-splash-hint{bottom:12px;font-size:12px}
+}
+
+
+.portal{position:absolute;left:50%;transform:translateX(-50%);z-index:6;width:88px;height:4px;pointer-events:none;background:#080808;border:1px solid rgba(120,210,255,.5);border-radius:2px;box-shadow:0 0 3px rgba(80,180,255,.32)}
+.portal::before,.portal::after{display:none!important;content:none!important}
+.portal-top{top:1px}
+.portal-bottom{bottom:1px}
+
 </style>
 </head>
 <body>
 <div class="app">
   <div class="topbar">
-    <div class="brand">🛒 Discounter <span>Strike</span></div>
-    <div class="stats">
-      <div class="pill">Tag <span id="day">Montag</span></div>
-      <div class="pill">Uhrzeit <span id="time">07:00 Uhr</span></div>
-      <div class="pill">Level <span id="round">1</span></div>
-      <div class="pill">Gegner <span id="progress">0/0</span></div>
-      <div class="pill">Punkte <span id="score">0</span></div>
-      <div class="pill">Leben <span id="lives">❤️❤️❤️</span></div>
-      <div class="pill">Waffe <span id="weapon">keine</span></div>
-      <div class="pill">Munition <span id="ammo">0</span></div>
-      <div class="pill">Tempo <span id="speed">normal</span></div>
-      <div class="pill hidden" id="cheatPill"><span id="cheat">Cheat an · 1 Senf · 2 Chili · 3 Tomate · 4 Pizza · 5 Welle · 6 ∞ Munition · 7 Melone</span></div><button class="sound-toggle" id="soundBtn" type="button" aria-label="Sound umschalten">🔊 Sound</button>
+    <div class="retro-lives life-display" id="lifeDisplay" aria-label="Verbleibende Leben"></div>
+    <div class="brand">Discounter <span>Strike</span></div>
+    <div class="retro-score">
+      <div>PUNKTE: <span id="score">000000</span></div>
+      <div>LEVEL: <span id="round">01</span></div>
     </div>
+  </div>
+  <div class="stats">
+    <div class="pill">Tag <span id="day">Montag</span></div>
+    <div class="pill">Uhrzeit <span id="time">07:00 Uhr</span></div>
+    <div class="pill">Gegner <span id="progress">0/0</span></div>
+    <div class="pill">Waffe <span id="weapon">keine</span></div>
+    <div class="pill">Munition <span id="ammo">0</span></div>
+    <div class="pill">Tempo <span id="speed">normal</span></div>
+    <div class="pill hidden" id="cheatPill"><span id="cheat">Cheat an</span></div>
+    <button class="sound-toggle" id="soundBtn" type="button" aria-label="Sound umschalten">🔊 Sound</button>
   </div>
 
   <div class="stage" id="stage">
     <canvas id="game"></canvas>
+    <div class="logo-splash" id="logoSplash" role="button" tabindex="0" aria-label="Titelbild schließen">
+      <img id="logoSplashImage" src="sprites/discounter/title.png" alt="Discounter Strike Titelbild">
+      <div class="logo-splash-hint">Beliebige Taste oder Klick</div>
+    </div>
+    <div class="portal portal-top" id="portalTop" aria-hidden="true"></div>
+    <div class="portal portal-bottom" id="portalBottom" aria-hidden="true"></div>
+    <div class="boss-hud hidden" id="bossHud">
+      <div class="boss-hud-name"><span id="bossHudName">Endgegner</span><span id="bossHudHp">0 / 0</span></div>
+      <div class="boss-hud-track"><div class="boss-hud-fill" id="bossHudFill"></div></div>
+    </div>
     <button class="pause-btn" id="pauseBtn" type="button" aria-label="Pause">Ⅱ</button>
     <div class="round-banner" id="roundBanner"></div>
+    <div class="stage-clear" id="stageClear" aria-hidden="true">
+      <div class="stage-clear-text" id="stageClearText">07:00 Uhr geschafft!</div>
+    </div>
 
     <div class="mobile-controls">
       <div class="dpad">
@@ -183,8 +233,7 @@ button:active{transform:translateY(4px);box-shadow:0 2px 0 #a98918}
           <div id="startHallOfFame" class="hof-status">Bestenliste wird geladen …</div>
         </div>
 
-        <div class="start-controls"><b>Menü:</b> A/D oder ←/→ auswählen · F oder Leertaste bestätigen<br><b>Spiel:</b> Pfeiltasten oder WASD · Schießen mit F oder Leertaste · Pause mit P</div>
-        <button id="startBtn" type="button">Spiel starten</button>
+        <div class="start-controls"><b>Menü:</b> A/D oder ←/→ Spielart wählen · F oder Leertaste starten<br><b>Spiel:</b> Pfeiltasten oder WASD · Schießen mit F oder Leertaste · Pause mit P</div>
       </div>
     </div>
 
@@ -230,7 +279,7 @@ button:active{transform:translateY(4px);box-shadow:0 2px 0 #a98918}
       </div>
     </div>
   </div>
-  <div class="footer"><span>Fiktives Arcade-Spiel ohne reale Marken oder Personen.</span><span class="release">Sprite-System vorbereitet · Theme über ?theme=labor wählbar</span></div>
+  <div class="footer"><span>Fiktives Arcade-Spiel ohne reale Marken oder Personen.</span><span class="release">Version 1.2 · Levelabschluss-Sequenz</span></div>
 </div>
 
 
@@ -482,15 +531,60 @@ saveButton.addEventListener("click", saveScore);
 loadScores();
 </script>
 
+<script src="balancing.js"></script>
+
 <script>
 (function(){
 "use strict";
+
+/*
+  Robuster Zugriff auf die optionale balancing.js.
+  Fehlt die Datei oder ein einzelner Wert, verwendet das Spiel seinen Standardwert.
+*/
+var BALANCE=(window.GAME_BALANCE&&typeof window.GAME_BALANCE==="object")?window.GAME_BALANCE:{};
+
+function balanceNumber(path,fallback){
+  var parts=path.split("."),value=BALANCE;
+  for(var i=0;i<parts.length;i++){
+    if(value==null||typeof value!=="object"||!(parts[i] in value))return fallback;
+    value=value[parts[i]];
+  }
+  return typeof value==="number"&&isFinite(value)?value:fallback;
+}
+
+function balanceBoolean(path,fallback){
+  var parts=path.split("."),value=BALANCE;
+  for(var i=0;i<parts.length;i++){
+    if(value==null||typeof value!=="object"||!(parts[i] in value))return fallback;
+    value=value[parts[i]];
+  }
+  return typeof value==="boolean"?value:fallback;
+}
+
+function chancePercent(path,fallback){
+  return Math.max(0,Math.min(100,balanceNumber(path,fallback)))/100;
+}
+
+function weightedChoice(items,weightGetter){
+  var total=0,weights=[];
+  for(var i=0;i<items.length;i++){
+    var weight=Math.max(0,Number(weightGetter(items[i]))||0);
+    weights.push(weight);total+=weight;
+  }
+  if(total<=0)return items.length?items[0]:null;
+  var roll=Math.random()*total;
+  for(i=0;i<items.length;i++){
+    roll-=weights[i];
+    if(roll<=0)return items[i];
+  }
+  return items[items.length-1];
+}
 
 var canvas=document.getElementById("game");
 var ctx=canvas.getContext("2d");
 var stage=document.getElementById("stage");
 var scoreEl=document.getElementById("score");
-var livesEl=document.getElementById("lives");
+var livesEl=document.getElementById("lifeDisplay");
 var weaponEl=document.getElementById("weapon");
 var ammoEl=document.getElementById("ammo");
 var speedEl=document.getElementById("speed");
@@ -509,15 +603,24 @@ var gameOverScreen=document.getElementById("gameOverScreen");
 var finalText=document.getElementById("finalText");
 var gameOverTitle=document.getElementById("gameOverTitle");
 var roundBanner=document.getElementById("roundBanner");
+var stageClear=document.getElementById("stageClear");
+var stageClearText=document.getElementById("stageClearText");
 var soundBtn=document.getElementById("soundBtn");
+var logoSplash=document.getElementById("logoSplash");
+var logoSplashImage=document.getElementById("logoSplashImage");
+var lifeDisplay=document.getElementById("lifeDisplay");
+var bossHud=document.getElementById("bossHud");
+var bossHudName=document.getElementById("bossHudName");
+var bossHudHp=document.getElementById("bossHudHp");
+var bossHudFill=document.getElementById("bossHudFill");
 var modeInputs=document.querySelectorAll('input[name="gameMode"]');
 var startMenuIndex=0;
 var upgradeMenuIndex=0;
 
 
-var W=900,H=600,DPR=1;
+var W=1200,H=650,DPR=1;
 var running=false,paused=false,betweenRounds=false,lastTime=0;
-var score=0,lives=3,maxLives=3;
+var score=0,lives=balanceNumber("player.startLives",3),maxLives=balanceNumber("player.startLives",3);
 var game={mode:"story",dayIndex:0,hour:7,stage:1,isBoss:false};
 var weekDays=["Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag","Sonntag"];
 var bossSchedule={
@@ -528,14 +631,23 @@ var bossSchedule={
   21:{id:"toiletPyramid",name:"Pyramide aus Klopapier",emoji:"🧻",hp:44,speed:78,pts:5500,r:50},
   23:{id:"cleaner",name:"Reinigungsmaschine",emoji:"🧼",hp:55,speed:82,pts:7500,r:52}
 };
+Object.keys(bossSchedule).forEach(function(hour){
+  var def=bossSchedule[hour];
+  var cfg=(BALANCE.bosses&&BALANCE.bosses[def.id])||{};
+  def.hp=balanceNumber("bosses."+def.id+".hp",def.hp);
+  def.speed=balanceNumber("bosses."+def.id+".speed",def.speed);
+  def.pts=balanceNumber("bosses."+def.id+".score",def.pts);
+});
 var enemiesToSpawn=12,enemiesSpawned=0,enemiesDefeated=0;
-var enemyTimer=.8,roundEndTimer=0;
+var enemyTimer=.8,roundEndTimer=0,stageClearStarted=false,stageClearTimeout=0;
 var speedBoostTimer=0,guaranteedWeaponTimer=5;
+var dropTimers={weapon:0,speedBoost:0,shopper:0,puddle:0};
 var godMode=false,cheatBuffer="",hallCheatBuffer="",roundCheated=false;
 var ammoMultiplier=1,fireRateMultiplier=1,puddleResistance=1;
 var upgradeLevels={speed:0,life:0,ammo:0,fire:0,ram:0,puddle:0};
 var enemies=[],shoppers=[],puddles=[],powerups=[],projectiles=[],bossProjectiles=[],chiliBombs=[],watermelons=[],splats=[],particles=[],shelves=[];
 var infiniteAmmoTimer=0;
+var portalCooldown=0;
 var keys={};
 
 var soundEnabled=true,audioCtx=null,bossMusicTimer=0,bossMusicStep=0;
@@ -550,11 +662,20 @@ var soundEnabled=true,audioCtx=null,bossMusicTimer=0,bossMusicStep=0;
   Erwartete Ordnerstruktur:
       sprites/
         discounter/
+          title.png
+          gui/heart.png
           player/cart.png
           enemies/raider.png
           enemies/pirate.png
           enemies/goblin.png
-          enemies/shopper.png
+          shoppers/cart_man.png
+          shoppers/cart_woman.png
+          shoppers/basket_man.png
+          shoppers/bag_woman.png
+          shoppers/senior_man.png
+          shoppers/senior_woman.png
+          shoppers/worker.png
+          shoppers/parent_child.png
           bosses/giant_cart.png
           bosses/supplier.png
           bosses/technician.png
@@ -585,12 +706,29 @@ var soundEnabled=true,audioCtx=null,bossMusicTimer=0,bossMusicStep=0;
 var themeFromUrl=(new URLSearchParams(window.location.search).get("theme")||"").replace(/[^a-z0-9_-]/gi,"");
 var ACTIVE_THEME=themeFromUrl||localStorage.getItem("discounterStrikeTheme")||"discounter";
 var SPRITE_BASE="sprites/"+ACTIVE_THEME+"/";
+if(logoSplashImage){
+  logoSplashImage.src=SPRITE_BASE+"title.png";
+  logoSplashImage.onerror=function(){
+    if(ACTIVE_THEME!=="discounter"){
+      logoSplashImage.onerror=null;
+      logoSplashImage.src="sprites/discounter/title.png";
+    }
+  };
+}
 var spritePaths={
+  "gui.heart":"gui/heart.png",
   "player.cart":"player/cart.png",
   "enemy.raider":"enemies/raider.png",
   "enemy.pirate":"enemies/pirate.png",
   "enemy.goblin":"enemies/goblin.png",
-  "enemy.shopper":"enemies/shopper.png",
+  "shopper.cartMan":"shoppers/cart_man.png",
+  "shopper.cartWoman":"shoppers/cart_woman.png",
+  "shopper.basketMan":"shoppers/basket_man.png",
+  "shopper.bagWoman":"shoppers/bag_woman.png",
+  "shopper.seniorMan":"shoppers/senior_man.png",
+  "shopper.seniorWoman":"shoppers/senior_woman.png",
+  "shopper.worker":"shoppers/worker.png",
+  "shopper.parentChild":"shoppers/parent_child.png",
   "boss.giantCart":"bosses/giant_cart.png",
   "boss.supplier":"bosses/supplier.png",
   "boss.technician":"bosses/technician.png",
@@ -703,6 +841,7 @@ function playSound(name){
   else if(name==="pickup"){tone(520,.08,"sine",.035,760);tone(760,.10,"sine",.03,1040,.07);}
   else if(name==="explosion"){noise(.32,.10);tone(95,.28,"sawtooth",.06,35);}
   else if(name==="round"){tone(440,.10,"triangle",.04,660);tone(660,.12,"triangle",.04,880,.11);}
+  else if(name==="stageClear"){tone(523,.12,"square",.045,659);tone(659,.12,"square",.045,784,.12);tone(784,.18,"triangle",.055,1047,.24);tone(1047,.34,"triangle",.05,1319,.40);}
   else if(name==="bossShot"){tone(145,.10,"square",.045,75);}
   else if(name==="bossWarning"){noise(.18,.055);tone(105,.22,"sawtooth",.055,55);}
 }
@@ -737,13 +876,24 @@ var player={
 };
 
 var weaponInfo={
-  mustard:{name:"Senfstrahl",ammo:20,cooldown:.24},
-  chili:{name:"Chili-Bombe",ammo:7,cooldown:.85},
-  ketchup:{name:"Ketchup-Kanone",ammo:12,cooldown:.52},
-  pizza:{name:"Pizza-Wurf",ammo:9,cooldown:.72},
-  wave:{name:"Schallwelle",ammo:99,cooldown:.55},
-  watermelon:{name:"Wassermelone",ammo:1,cooldown:1.15}
+  mustard:{name:"Senfstrahl",ammo:balanceNumber("weapons.mustard.ammo",20),cooldown:balanceNumber("weapons.mustard.cooldown",.24)},
+  chili:{name:"Chili-Bombe",ammo:balanceNumber("weapons.chili.ammo",7),cooldown:balanceNumber("weapons.chili.cooldown",.85)},
+  ketchup:{name:"Ketchup-Kanone",ammo:balanceNumber("weapons.ketchup.ammo",12),cooldown:balanceNumber("weapons.ketchup.cooldown",.52)},
+  pizza:{name:"Pizza-Wurf",ammo:balanceNumber("weapons.pizza.ammo",9),cooldown:balanceNumber("weapons.pizza.cooldown",.72)},
+  wave:{name:"Schallwelle",ammo:balanceNumber("weapons.wave.ammo",99),cooldown:balanceNumber("weapons.wave.cooldown",.55)},
+  watermelon:{name:"Wassermelone",ammo:balanceNumber("weapons.watermelon.ammo",1),cooldown:balanceNumber("weapons.watermelon.cooldown",1.15)}
 };
+
+var shopperTypes=[
+  {id:"cartMan",emoji:"🛒",w:74,h:74,r:24},
+  {id:"cartWoman",emoji:"🛒",w:74,h:74,r:24},
+  {id:"basketMan",emoji:"🧺",w:62,h:68,r:21},
+  {id:"bagWoman",emoji:"🛍️",w:62,h:68,r:21},
+  {id:"seniorMan",emoji:"👴",w:58,h:68,r:20},
+  {id:"seniorWoman",emoji:"👵",w:58,h:68,r:20},
+  {id:"worker",emoji:"👷",w:62,h:68,r:21},
+  {id:"parentChild",emoji:"👨‍👦",w:82,h:72,r:25}
+];
 
 var upgrades=[
   {id:"speed",icon:"🛞",title:"Turbo-Räder",desc:"Grundgeschwindigkeit dauerhaft um 12 % erhöhen."},
@@ -776,11 +926,19 @@ function resize(){
 
 function buildShelves(){
   shelves=[];
-  var rows=4,gap=(H-150)/(rows-1);
+  // Version 1.1: sechs größere Regale mit breiten Laufwegen.
+  var rows=3;
+  var shelfH=Math.max(48,Math.min(62,H*.085));
+  var topMargin=Math.max(82,H*.16);
+  var bottomMargin=Math.max(78,H*.14);
+  var gap=(H-topMargin-bottomMargin)/(rows-1);
+  var shelfW=Math.min(390,W*.29);
+  var leftX=W*.18;
+  var rightX=W*.58;
   for(var i=0;i<rows;i++){
-    var y=75+i*gap;
-    shelves.push({x:W*.30,y:y-15,w:W*.25,h:30});
-    shelves.push({x:W*.67,y:y-15,w:W*.18,h:30});
+    var y=topMargin+i*gap-shelfH/2;
+    shelves.push({x:leftX,y:y,w:shelfW,h:shelfH});
+    shelves.push({x:rightX,y:y,w:shelfW,h:shelfH});
   }
 }
 
@@ -807,7 +965,7 @@ function spawnBoss(def){
     x:W-80,
     y:H/2,
     r:def.r,
-    baseSpeed:def.speed+game.stage*.8,
+    baseSpeed:def.speed+game.stage*balanceNumber("bosses.levelSpeedIncrease",.8),
     vx:-def.speed,
     vy:0,
     ai:"boss",
@@ -830,14 +988,16 @@ function spawnBoss(def){
 
 function spawnBossWeapon(){
   var types=["mustard","ketchup","chili","pizza","wave"];
-  var type=types[Math.floor(Math.random()*types.length)];
-  powerups.push({x:Math.max(W*.58,player.x+150),y:safePowerupY(),r:23,vx:-25,type:type});
+  var type=weightedChoice(types,function(id){return balanceNumber("weapons."+id+".dropRate",1);});
+  powerups.push({x:Math.max(W*.58,player.x+150),y:safePowerupY(),r:23,vx:-balanceNumber("powerups.bossWeaponMovementSpeed",25),type:type});
 }
 
 function startBossBattle(def){
   game.isBoss=true;
   betweenRounds=false;
   roundEndTimer=0;
+  stageClearStarted=false;
+  hideStageClear();
   enemies=[];shoppers=[];puddles=[];powerups=[];projectiles=[];bossProjectiles=[];chiliBombs=[];watermelons=[];splats=[];
   enemiesToSpawn=1;
   enemiesSpawned=1;
@@ -854,6 +1014,7 @@ function startBossBattle(def){
 
 function finishStory(){
   stopBossMusic();
+  bossHud.classList.add("hidden");
   running=false;
   paused=false;
   betweenRounds=true;
@@ -867,31 +1028,22 @@ function finishStory(){
 
 function updateStartMenuSelection(){
   var options=document.querySelectorAll(".mode-option");
-  var startButton=document.getElementById("startBtn");
   for(var i=0;i<options.length;i++){
     options[i].classList.toggle("keyboard-selected",startMenuIndex===i);
   }
-  if(startButton)startButton.classList.toggle("keyboard-selected",startMenuIndex===options.length);
 }
 
 function moveStartMenu(direction){
-  var count=modeInputs.length+1;
+  var count=modeInputs.length;
   startMenuIndex=(startMenuIndex+direction+count)%count;
-  if(startMenuIndex<modeInputs.length){
-    modeInputs[startMenuIndex].checked=true;
-  }
+  modeInputs[startMenuIndex].checked=true;
   updateStartMenuSelection();
   playSound("pickup");
 }
 
 function activateStartMenuSelection(){
-  if(startMenuIndex<modeInputs.length){
-    modeInputs[startMenuIndex].checked=true;
-    updateStartMenuSelection();
-    playSound("pickup");
-  }else{
-    startGame();
-  }
+  modeInputs[startMenuIndex].checked=true;
+  startGame();
 }
 
 function updateUpgradeMenuSelection(){
@@ -1022,9 +1174,15 @@ function resetGame(mode){
 function resetWorldForRound(){
   enemies=[];shoppers=[];puddles=[];powerups=[];projectiles=[];bossProjectiles=[];chiliBombs=[];watermelons=[];splats=[];particles=[];
   infiniteAmmoTimer=0;
-  enemiesToSpawn=6+Math.min(8,Math.floor((game.hour-7)/2))+Math.min(6,game.dayIndex*2);
+  var rawEnemyCount=
+    balanceNumber("rounds.baseEnemyCount",6)+
+    Math.min(balanceNumber("rounds.maximumHourBonus",8),Math.floor((game.hour-7)/2)*balanceNumber("rounds.additionalEnemiesPerTwoHours",1))+
+    Math.min(balanceNumber("rounds.maximumDayBonus",6),game.dayIndex*balanceNumber("rounds.additionalEnemiesPerDay",2));
+  enemiesToSpawn=Math.max(1,Math.round(rawEnemyCount*balanceNumber("rounds.enemyAmountFactor",1)));
   enemiesSpawned=0;enemiesDefeated=0;
-  enemyTimer=.65;roundEndTimer=0;speedBoostTimer=0;guaranteedWeaponTimer=4.5;
+  enemyTimer=.65;roundEndTimer=0;stageClearStarted=false;speedBoostTimer=0;guaranteedWeaponTimer=4.5;
+  hideStageClear();
+  resetDropTimers();
   betweenRounds=false;paused=false;
   player.x=70;player.y=Math.max(55,H/2-player.h/2);player.inv=0;player.shootCooldown=0;
   updateHud();
@@ -1032,20 +1190,35 @@ function resetWorldForRound(){
 }
 
 function updateHud(){
-  scoreEl.textContent=Math.floor(score);
-  livesEl.textContent=godMode?"∞ ❤️":"❤️".repeat(Math.max(0,lives))+"🖤".repeat(Math.max(0,maxLives-lives));
+  scoreEl.textContent=String(Math.floor(score)).padStart(6,"0");
+  if(godMode){
+    livesEl.innerHTML='<span class="god-life">∞</span>';
+  }else{
+    var heartCount=Math.max(0,Math.min(Math.round(balanceNumber("player.maxDisplayedLives",4)),lives));
+    var heartHtml="";
+    for(var heartIndex=0;heartIndex<heartCount;heartIndex++){
+      heartHtml+='<img src="'+spriteUrl("gui.heart")+'" alt="Leben">';
+    }
+    livesEl.innerHTML=heartHtml;
+  }
   weaponEl.textContent=player.weapon?weaponInfo[player.weapon].name:"keine";
   ammoEl.textContent=infiniteAmmoTimer>0?"∞ "+Math.ceil(infiniteAmmoTimer)+" s":player.ammo;
   speedEl.textContent=speedBoostTimer>0?speedBoostTimer.toFixed(1)+" s":"normal";
   cheatEl.textContent="Cheat an";
   cheatPill.classList.add("hidden");
-  roundEl.textContent=game.stage;
+  roundEl.textContent=String(game.stage).padStart(2,"0");
   dayEl.textContent=currentDayName();
   timeEl.textContent=currentTimeLabel();
   if(game.isBoss&&enemies.length&&enemies[0].boss&&!enemies[0].hit){
-    progressEl.textContent="Boss "+Math.max(0,enemies[0].hp)+"/"+enemies[0].maxHp;
+    var activeBoss=enemies[0];
+    progressEl.textContent="Boss";
+    bossHud.classList.remove("hidden");
+    bossHudName.textContent=activeBoss.name||"Endgegner";
+    bossHudHp.textContent=Math.max(0,activeBoss.hp)+" / "+activeBoss.maxHp;
+    bossHudFill.style.width=Math.max(0,Math.min(100,activeBoss.hp/activeBoss.maxHp*100))+"%";
   }else{
     progressEl.textContent=enemiesDefeated+"/"+enemiesToSpawn;
+    bossHud.classList.add("hidden");
   }
 }
 
@@ -1057,7 +1230,10 @@ function showRoundBanner(text){
 
 function returnToStartScreen(){
   stopBossMusic();
+  bossHud.classList.add("hidden");
   running=false;paused=false;betweenRounds=false;
+  stageClearStarted=false;
+  hideStageClear();
   gameOverScreen.classList.add("hidden");
   pauseScreen.classList.add("hidden");
   upgradeScreen.classList.add("hidden");
@@ -1068,6 +1244,17 @@ function returnToStartScreen(){
   if(restart)restart.textContent="Nicht speichern · Zum Startbildschirm";
   if(typeof window.resetHighscoreGameState==="function")window.resetHighscoreGameState();
   draw();
+}
+
+function closeLogoSplash(){
+  if(!logoSplash||logoSplash.classList.contains("hidden"))return false;
+  logoSplash.classList.add("hidden");
+  updateStartMenuSelection();
+  return true;
+}
+
+if(logoSplash){
+  logoSplash.addEventListener("click",function(){closeLogoSplash();},false);
 }
 
 function startGame(){
@@ -1091,6 +1278,7 @@ function togglePause(){
 
 function endGame(){
   stopBossMusic();
+  bossHud.classList.add("hidden");
   running=false;paused=false;
   gameOverTitle.innerHTML="Kasse <b>geschlossen</b>";
   finalText.innerHTML="Du hast <b>"+Math.floor(score).toLocaleString("de-DE")+" Punkte</b> erreicht und bist bis <b>"+currentDayName()+", "+currentTimeLabel()+"</b> gekommen.";
@@ -1154,9 +1342,9 @@ function fixedEnemySpawnY(round,index){
 
 function spawnEnemy(){
   var types=[
-    {id:"raider",emoji:"😈",name:"Rabatt-Räuber",pts:100,speed:76,hp:1},
-    {id:"pirate",emoji:"🦹",name:"Pfand-Pirat",pts:150,speed:91,hp:2},
-    {id:"goblin",emoji:"👹",name:"Kassen-Kobold",pts:210,speed:105,hp:3}
+    {id:"raider",emoji:"😈",name:"Rabatt-Räuber",pts:balanceNumber("enemies.raider.score",100),speed:balanceNumber("enemies.raider.speed",76),hp:balanceNumber("enemies.raider.hp",1)},
+    {id:"pirate",emoji:"🦹",name:"Pfand-Pirat",pts:balanceNumber("enemies.pirate.score",150),speed:balanceNumber("enemies.pirate.speed",91),hp:balanceNumber("enemies.pirate.hp",2)},
+    {id:"goblin",emoji:"👹",name:"Kassen-Kobold",pts:balanceNumber("enemies.goblin.score",210),speed:balanceNumber("enemies.goblin.speed",105),hp:balanceNumber("enemies.goblin.hp",3)}
   ];
   var maxIndex=Math.min(types.length-1,Math.floor((game.stage-1)/2));
   var typeIndex=Math.floor(seededSpawnValue(game.stage,enemiesSpawned,5)*(maxIndex+1));
@@ -1166,8 +1354,8 @@ function spawnEnemy(){
     x:W+35,
     y:spawnY,
     r:22,
-    baseSpeed:t.speed+game.stage*2.4,
-    vx:-(t.speed+game.stage*2.4),
+    baseSpeed:t.speed+game.stage*balanceNumber("enemies.levelSpeedIncrease",2.4),
+    vx:-(t.speed+game.stage*balanceNumber("enemies.levelSpeedIncrease",2.4)),
     vy:(seededSpawnValue(game.stage,enemiesSpawned,7)-.5)*30,
     ai:t.id,
     aiTimer:.45+seededSpawnValue(game.stage,enemiesSpawned,11)*.8,
@@ -1192,38 +1380,111 @@ function safePowerupY(){
   return H/2;
 }
 
-function spawnExtra(){
-  var roll=Math.random();
-  if(roll<.34){
-    var weaponRoll=Math.random();
-    var type;
-    if(weaponRoll<.025)type="watermelon";
-    else if(weaponRoll<.075)type="infinite";
-    else if(weaponRoll<.37)type="mustard";
-    else if(weaponRoll<.61)type="ketchup";
-    else if(weaponRoll<.82)type="chili";
-    else type="pizza";
-    powerups.push({x:W+35,y:safePowerupY(),r:type==="watermelon"?29:23,vx:-70,type:type});
-  }else if(roll<.46){
-    powerups.push({x:W+35,y:safePowerupY(),r:22,vx:-74,type:"speed"});
-  }else if(roll<.70){
-    shoppers.push({x:W+30,y:45+Math.random()*(H-90),r:19,vx:-(50+Math.random()*25),emoji:"🧓"});
-  }else{
-    puddles.push({x:W+30,y:50+Math.random()*(H-100),r:24,vx:-(60+Math.random()*17)});
+function countWeaponDrops(){
+  var count=0;
+  for(var i=0;i<powerups.length;i++){
+    if(powerups[i].type!=="speed")count++;
+  }
+  return count;
+}
+
+function spawnWeaponDrop(){
+  var types=["watermelon","infinite","mustard","ketchup","chili","pizza","wave"];
+  var type=weightedChoice(types,function(id){return balanceNumber("weapons."+id+".dropRate",0);});
+  if(!type)return;
+  powerups.push({
+    x:W+35,
+    y:safePowerupY(),
+    r:type==="watermelon"?29:23,
+    vx:-balanceNumber("drops.weapon.movementSpeed",70),
+    type:type
+  });
+}
+
+function spawnSpeedBoostDrop(){
+  powerups.push({
+    x:W+35,
+    y:safePowerupY(),
+    r:22,
+    vx:-balanceNumber("drops.speedBoost.movementSpeed",74),
+    type:"speed"
+  });
+}
+
+function spawnShopperDrop(){
+  var shopperDef=shopperTypes[Math.floor(Math.random()*shopperTypes.length)];
+  var minSpeed=balanceNumber("drops.shopper.minimumMovementSpeed",48);
+  var maxSpeed=Math.max(minSpeed,balanceNumber("drops.shopper.maximumMovementSpeed",75));
+  shoppers.push({
+    x:W+50,
+    y:55+Math.random()*(H-110),
+    r:shopperDef.r,
+    vx:-(minSpeed+Math.random()*(maxSpeed-minSpeed)),
+    emoji:shopperDef.emoji,
+    spriteId:shopperDef.id,
+    spriteW:shopperDef.w,
+    spriteH:shopperDef.h,
+    hit:false
+  });
+}
+
+function spawnPuddleDrop(){
+  var minSpeed=balanceNumber("drops.puddle.minimumMovementSpeed",60);
+  var maxSpeed=Math.max(minSpeed,balanceNumber("drops.puddle.maximumMovementSpeed",77));
+  puddles.push({
+    x:W+30,
+    y:50+Math.random()*(H-100),
+    r:balanceNumber("drops.puddle.radius",24),
+    vx:-(minSpeed+Math.random()*(maxSpeed-minSpeed))
+  });
+}
+
+function resetDropTimers(){
+  dropTimers.weapon=balanceNumber("drops.weapon.checkIntervalSeconds",2.0);
+  dropTimers.speedBoost=balanceNumber("drops.speedBoost.checkIntervalSeconds",2.0);
+  dropTimers.shopper=balanceNumber("drops.shopper.checkIntervalSeconds",2.0);
+  dropTimers.puddle=balanceNumber("drops.puddle.checkIntervalSeconds",2.0);
+}
+
+function processIndependentDrops(dt){
+  var definitions=[
+    {id:"weapon",arrayCount:countWeaponDrops,spawn:spawnWeaponDrop},
+    {id:"speedBoost",arrayCount:function(){
+      var count=0;for(var i=0;i<powerups.length;i++)if(powerups[i].type==="speed")count++;return count;
+    },spawn:spawnSpeedBoostDrop},
+    {id:"shopper",arrayCount:function(){return shoppers.length;},spawn:spawnShopperDrop},
+    {id:"puddle",arrayCount:function(){return puddles.length;},spawn:spawnPuddleDrop}
+  ];
+
+  for(var i=0;i<definitions.length;i++){
+    var def=definitions[i],base="drops."+def.id;
+    dropTimers[def.id]-=dt;
+    if(dropTimers[def.id]>0)continue;
+
+    var interval=Math.max(.05,balanceNumber(base+".checkIntervalSeconds",2.0));
+    dropTimers[def.id]+=interval;
+
+    if(!balanceBoolean(base+".enabled",true))continue;
+    if(game.isBoss&&!balanceBoolean(base+".enabledDuringBoss",false))continue;
+
+    var maxOnMap=Math.max(0,Math.round(balanceNumber(base+".maxOnMap",1)));
+    if(maxOnMap===0||def.arrayCount()>=maxOnMap)continue;
+
+    if(Math.random()<chancePercent(base+".chancePercent",0))def.spawn();
   }
 }
 
 function equipWeapon(type){
   if(type==="infinite"){
-    infiniteAmmoTimer=10;
-    burst(player.x+player.w/2,player.y,"10 SEK. ∞ MUNITION!");
+    infiniteAmmoTimer=balanceNumber("weapons.infinite.durationSeconds",10);
+    burst(player.x+player.w/2,player.y,Math.round(infiniteAmmoTimer)+" SEK. ∞ MUNITION!");
     playSound("infinite");
     updateHud();
     return;
   }
   player.weapon=type;
   player.ammo=Math.max(1,Math.round(weaponInfo[type].ammo*ammoMultiplier));
-  guaranteedWeaponTimer=10;
+  guaranteedWeaponTimer=balanceNumber("powerups.guaranteedWeaponAfterSeconds",10);
   burst(player.x+player.w/2,player.y,weaponInfo[type].name+"!");
   playSound("pickup");
   updateHud();
@@ -1239,21 +1500,21 @@ function shoot(){
   var sx=player.x+player.w/2+dir*28,sy=player.y+player.h/2-3;
 
   if(type==="mustard"){
-    projectiles.push({type:"mustard",x:sx,y:sy,vx:dir*640,life:1.65,r:8,length:70,damage:1});
+    projectiles.push({type:"mustard",x:sx,y:sy,vx:dir*balanceNumber("weapons.mustard.projectileSpeed",820),life:1.65,r:8,length:70,damage:balanceNumber("weapons.mustard.damage",1)});
   }else if(type==="ketchup"){
-    projectiles.push({type:"ketchup",x:sx,y:sy,vx:dir*390,life:2.35,r:12,damage:2});
+    projectiles.push({type:"ketchup",x:sx,y:sy,vx:dir*balanceNumber("weapons.ketchup.projectileSpeed",540),life:2.35,r:12,damage:balanceNumber("weapons.ketchup.damage",2)});
   }else if(type==="chili"){
-    chiliBombs.push({x:sx,y:sy,startY:sy,vx:dir*245,vy:-185,gravity:440,life:.68,fuse:.38,state:"flying",r:11});
+    chiliBombs.push({x:sx,y:sy,startY:sy,vx:dir*balanceNumber("weapons.chili.projectileSpeed",330),vy:balanceNumber("weapons.chili.verticalSpeed",-215),gravity:balanceNumber("weapons.chili.gravity",440),life:.68,fuse:.38,state:"flying",r:11});
   }else if(type==="pizza"){
-    var pizzaSpeed=355;
-    projectiles.push({type:"pizza",x:sx,y:sy,vx:pizzaSpeed,vy:0,life:2.35,r:24,damage:2,rotation:0});
-    projectiles.push({type:"pizza",x:sx,y:sy,vx:-pizzaSpeed,vy:0,life:2.35,r:24,damage:2,rotation:Math.PI});
-    projectiles.push({type:"pizza",x:sx,y:sy,vx:0,vy:-pizzaSpeed,life:2.35,r:24,damage:2,rotation:-Math.PI/2});
-    projectiles.push({type:"pizza",x:sx,y:sy,vx:0,vy:pizzaSpeed,life:2.35,r:24,damage:2,rotation:Math.PI/2});
+    var pizzaSpeed=balanceNumber("weapons.pizza.projectileSpeed",480);
+    projectiles.push({type:"pizza",x:sx,y:sy,vx:pizzaSpeed,vy:0,life:2.35,r:24,damage:balanceNumber("weapons.pizza.damage",2),rotation:0});
+    projectiles.push({type:"pizza",x:sx,y:sy,vx:-pizzaSpeed,vy:0,life:2.35,r:24,damage:balanceNumber("weapons.pizza.damage",2),rotation:Math.PI});
+    projectiles.push({type:"pizza",x:sx,y:sy,vx:0,vy:-pizzaSpeed,life:2.35,r:24,damage:balanceNumber("weapons.pizza.damage",2),rotation:-Math.PI/2});
+    projectiles.push({type:"pizza",x:sx,y:sy,vx:0,vy:pizzaSpeed,life:2.35,r:24,damage:balanceNumber("weapons.pizza.damage",2),rotation:Math.PI/2});
   }else if(type==="wave"){
-    projectiles.push({type:"wave",x:sx,y:sy,vx:dir*320,vy:0,life:2.0,r:20,damage:2,growth:180});
+    projectiles.push({type:"wave",x:sx,y:sy,vx:dir*balanceNumber("weapons.wave.projectileSpeed",450),vy:0,life:2.0,r:20,damage:balanceNumber("weapons.wave.damage",2),growth:balanceNumber("weapons.wave.growth",180)});
   }else if(type==="watermelon"){
-    watermelons.push({x:sx,y:sy,vx:dir*250,vy:-235,gravity:430,r:25,life:2.15,age:0,rotation:0});
+    watermelons.push({x:sx,y:sy,vx:dir*balanceNumber("weapons.watermelon.projectileSpeed",330),vy:balanceNumber("weapons.watermelon.verticalSpeed",-265),gravity:balanceNumber("weapons.watermelon.gravity",430),r:25,life:2.15,age:0,rotation:0});
   }
   if(infiniteAmmoTimer<=0&&player.ammo<=0){player.weapon=null;}
   updateHud();
@@ -1281,14 +1542,14 @@ function damageEnemy(e,amount,label,knockDir){
 
 function explodeChili(b){
   b.state="done";
-  var radius=105;
+  var radius=balanceNumber("weapons.chili.explosionRadius",105);
   burst(b.x,b.y,"CHILI-BOOM!","#f2382f");
   playSound("explosion");
   for(var i=0;i<28;i++)particles.push({x:b.x,y:b.y,vx:(Math.random()-.5)*390,vy:(Math.random()-.5)*390,life:.85,size:4+Math.random()*8,color:Math.random()<.5?"#ff3428":"#ff9d16"});
   for(i=0;i<enemies.length;i++){
     var e=enemies[i];
     if(!e.hit&&distance(b.x,b.y,e.x,e.y)<radius+e.r){
-      damageEnemy(e,3,"SCHARF! +"+e.pts,e.x>=b.x?1:-1);
+      damageEnemy(e,balanceNumber("weapons.chili.explosionDamage",3),"SCHARF! +"+e.pts,e.x>=b.x?1:-1);
     }
   }
 }
@@ -1298,16 +1559,42 @@ function damagePlayer(label){
   playSound("damage");
   if(godMode){burst(player.x+30,player.y,"UNVERWUNDBAR");return;}
   if(player.inv>0){return;}
-  lives--;player.inv=1.4;burst(player.x+30,player.y,label);updateHud();
+  lives--;player.inv=balanceNumber("player.invulnerabilitySeconds",1.4);burst(player.x+30,player.y,label);updateHud();
   if(lives<=0){endGame();}
+}
+
+function hideStageClear(){
+  if(stageClearTimeout){window.clearTimeout(stageClearTimeout);stageClearTimeout=0;}
+  if(stageClear){stageClear.classList.remove("show");stageClear.setAttribute("aria-hidden","true");}
+}
+
+function startStageClearSequence(onComplete){
+  if(stageClearStarted)return;
+  stageClearStarted=true;
+  betweenRounds=true;
+  stopBossMusic();
+  if(stageClearText)stageClearText.textContent=currentTimeLabel()+" geschafft!";
+  if(stageClear){
+    stageClear.setAttribute("aria-hidden","false");
+    stageClear.classList.remove("show");
+    void stageClear.offsetWidth;
+    stageClear.classList.add("show");
+  }
+  playSound("stageClear");
+  stageClearTimeout=window.setTimeout(function(){
+    hideStageClear();
+    if(typeof onComplete==="function")onComplete();
+  },1000);
 }
 
 function beginUpgradeSelection(){
   if(upgradeTitle)upgradeTitle.textContent=game.isBoss?"Endgegner besiegt!":currentTimeLabel()+" geschafft!";
   betweenRounds=true;upgradeGrid.innerHTML="";
   var pool=upgrades.slice(),choices=[];
-  while(choices.length<3&&pool.length){
-    var index=Math.floor(Math.random()*pool.length);
+  var choiceCount=Math.max(1,Math.round(balanceNumber("upgrades.choicesPerRound",3)));
+  while(choices.length<choiceCount&&pool.length){
+    var selected=weightedChoice(pool,function(up){return balanceNumber("upgrades."+up.id+".dropRate",1);});
+    var index=pool.indexOf(selected);
     choices.push(pool.splice(index,1)[0]);
   }
   upgradeMenuIndex=0;
@@ -1330,12 +1617,12 @@ function beginUpgradeSelection(){
 
 function applyUpgrade(id){
   upgradeLevels[id]=(upgradeLevels[id]||0)+1;
-  if(id==="speed"){player.baseSpeed*=1.12;}
-  else if(id==="life"){maxLives++;lives=maxLives;}
-  else if(id==="ammo"){ammoMultiplier*=1.30;}
-  else if(id==="fire"){fireRateMultiplier*=.85;}
+  if(id==="speed"){player.baseSpeed*=balanceNumber("upgrades.speed.factor",1.12);}
+  else if(id==="life"){maxLives+=Math.max(1,Math.round(balanceNumber("upgrades.life.additionalLives",1)));lives=maxLives;}
+  else if(id==="ammo"){ammoMultiplier*=balanceNumber("upgrades.ammo.factor",1.30);}
+  else if(id==="fire"){fireRateMultiplier*=balanceNumber("upgrades.fire.factor",.85);}
   else if(id==="ram"){/* Trefferbereich wächst über upgradeLevels.ram. */}
-  else if(id==="puddle"){puddleResistance*=.72;}
+  else if(id==="puddle"){puddleResistance*=balanceNumber("upgrades.puddle.factor",.72);}
   upgradeScreen.classList.add("hidden");
   advanceGameClock();resetWorldForRound();lastTime=performance.now();
 }
@@ -1358,6 +1645,7 @@ function update(dt){
   guaranteedWeaponTimer-=dt;
   player.inv=Math.max(0,player.inv-dt);
   player.shootCooldown=Math.max(0,player.shootCooldown-dt);
+  portalCooldown=Math.max(0,portalCooldown-dt);
 
   if(guaranteedWeaponTimer<=0&&!player.weapon){
     var hasWeapon=false;
@@ -1368,8 +1656,10 @@ function update(dt){
       if(game.isBoss)spawnBossWeapon();
       else powerups.push({x:W+35,y:safePowerupY(),r:23,vx:-67,type:"mustard"});
     }
-    guaranteedWeaponTimer=game.isBoss?5:9;
+    guaranteedWeaponTimer=game.isBoss?balanceNumber("powerups.guaranteedWeaponBossSeconds",5):balanceNumber("powerups.guaranteedWeaponNormalSeconds",9);
   }
+
+  processIndependentDrops(dt);
 
   var dx=0,dy=0;
   if(keys.ArrowRight||keys.d){dx++}if(keys.ArrowLeft||keys.a){dx--}
@@ -1383,18 +1673,39 @@ function update(dt){
       slow=.55+(1-.55)*(1-puddleResistance);break;
     }
   }
-  var moveSpeed=player.baseSpeed*(speedBoostTimer>0?1.55:1)*slow;
+  var moveSpeed=player.baseSpeed*(speedBoostTimer>0?balanceNumber("powerups.speedBoostFactor",1.55):1)*slow;
   var nx=Math.max(6,Math.min(W-player.w-6,player.x+dx*moveSpeed*dt));
-  var ny=Math.max(6,Math.min(H-player.h-6,player.y+dy*moveSpeed*dt));
+  var rawNy=player.y+dy*moveSpeed*dt;
+  var portalHalfWidth=60;
+  var playerCenterX=nx+player.w/2;
+  var inPortalLane=Math.abs(playerCenterX-W/2)<=portalHalfWidth;
+
   if(!playerHitsShelf(nx,player.y))player.x=nx;
-  if(!playerHitsShelf(player.x,ny))player.y=ny;
+
+  if(inPortalLane){
+    // Im Portalbereich darf der Wagen ein Stück über den Spielfeldrand hinausfahren.
+    player.y=rawNy;
+    if(portalCooldown<=0&&player.y+player.h<0){
+      player.y=H-4;
+      portalCooldown=.55;
+      playSound("pickup");
+      burst(W/2,H-12,"","#68e7ff");
+    }else if(portalCooldown<=0&&player.y>H){
+      player.y=-player.h+4;
+      portalCooldown=.55;
+      playSound("pickup");
+      burst(W/2,12,"","#68e7ff");
+    }
+  }else{
+    var ny=Math.max(6,Math.min(H-player.h-6,rawNy));
+    if(!playerHitsShelf(player.x,ny))player.y=ny;
+  }
 
   if(!game.isBoss&&enemiesSpawned<enemiesToSpawn){
     enemyTimer-=dt;
     if(enemyTimer<=0){
       spawnEnemy();
-      if(Math.random()<.43)spawnExtra();
-      enemyTimer=Math.max(.52,1.26-game.stage*.035);
+      enemyTimer=Math.max(balanceNumber("rounds.enemySpawnIntervalMinimum",.52),balanceNumber("rounds.enemySpawnIntervalStart",1.26)-game.stage*balanceNumber("rounds.enemySpawnAccelerationPerLevel",.035));
     }
   }
 
@@ -1682,9 +1993,8 @@ function update(dt){
   splats=splats.filter(function(x){return x.life>0;});
   particles=particles.filter(function(x){return x.life>0;});
 
-  if(enemiesSpawned>=enemiesToSpawn&&enemiesDefeated>=enemiesToSpawn&&enemies.length===0){
-    roundEndTimer+=dt;
-    if(roundEndTimer>.75){
+  if(enemiesSpawned>=enemiesToSpawn&&enemiesDefeated>=enemiesToSpawn&&enemies.length===0&&!stageClearStarted){
+    startStageClearSequence(function(){
       if(game.isBoss){
         if(isFinalBoss()&&game.mode==="story"){
           finishStory();
@@ -1701,7 +2011,7 @@ function update(dt){
           beginUpgradeSelection();
         }
       }
-    }
+    });
   }
 
   updateHud();
@@ -1739,6 +2049,56 @@ function drawWholeWatermelon(x,y,scale,rotation){
   ctx.restore();
 }
 
+function drawPixelShelf(s,index){
+  ctx.save();
+  // Schlagschatten
+  ctx.fillStyle="rgba(50,35,20,.25)";
+  ctx.fillRect(s.x+5,s.y+6,s.w,s.h);
+
+  // Dunkler Regalrahmen
+  ctx.fillStyle="#3d2b1f";
+  ctx.fillRect(s.x,s.y,s.w,s.h);
+  ctx.fillStyle="#17191b";
+  ctx.fillRect(s.x+7,s.y+8,s.w-14,s.h-16);
+
+  // Goldene Seitenkappen
+  ctx.fillStyle="#f6c84b";
+  ctx.fillRect(s.x+3,s.y+4,22,s.h-8);
+  ctx.fillRect(s.x+s.w-25,s.y+4,22,s.h-8);
+  ctx.fillStyle="#ffe37a";
+  ctx.fillRect(s.x+5,s.y+5,18,4);
+  ctx.fillRect(s.x+s.w-23,s.y+5,18,4);
+
+  // Zwei Fachböden
+  var innerX=s.x+30,innerW=s.w-60;
+  var middle=s.y+s.h*.53;
+  ctx.fillStyle="#8a5a28";
+  ctx.fillRect(innerX,s.y+6,innerW,4);
+  ctx.fillRect(innerX,middle,innerW,4);
+  ctx.fillRect(innerX,s.y+s.h-8,innerW,4);
+
+  // Pixelprodukte in zwei Reihen, reproduzierbar je Regal.
+  var palette=["#e34b32","#f0b52b","#4a9bd8","#55a84f","#b65bc8","#f07832","#e8d9a4"];
+  var cols=Math.max(7,Math.floor(innerW/30));
+  var cell=innerW/cols;
+  for(var row=0;row<2;row++){
+    for(var c=0;c<cols;c++){
+      var color=palette[(index*3+row*2+c)%palette.length];
+      var px=innerX+c*cell+4;
+      var py=row===0?s.y+13:middle+8;
+      var pw=Math.max(11,cell-8);
+      var ph=row===0?Math.max(10,s.h*.22):Math.max(9,s.h*.18);
+      ctx.fillStyle=color;
+      ctx.fillRect(Math.round(px),Math.round(py),Math.round(pw),Math.round(ph));
+      ctx.fillStyle="rgba(255,255,255,.55)";
+      ctx.fillRect(Math.round(px+2),Math.round(py+2),Math.max(2,Math.round(pw*.28)),2);
+      ctx.fillStyle="rgba(0,0,0,.18)";
+      ctx.fillRect(Math.round(px),Math.round(py+ph-2),Math.round(pw),2);
+    }
+  }
+  ctx.restore();
+}
+
 function draw(){
   ctx.clearRect(0,0,W,H);ctx.fillStyle="#d7d0bd";ctx.fillRect(0,0,W,H);
   ctx.strokeStyle="#c8c0aa";ctx.lineWidth=1;
@@ -1746,8 +2106,7 @@ function draw(){
   for(var y=0;y<H;y+=52){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
 
   for(var i=0;i<shelves.length;i++){
-    var s=shelves[i];fillRoundRect(s.x,s.y,s.w,s.h,6,"#6f4e37");
-    ctx.fillStyle="#f3ce69";for(x=s.x+8;x<s.x+s.w-8;x+=28)ctx.fillRect(x,s.y+6,16,s.h-12);
+    drawPixelShelf(shelves[i],i);
   }
 
   ctx.textAlign="center";ctx.textBaseline="middle";
@@ -1836,8 +2195,12 @@ function draw(){
   }
 
   for(i=0;i<shoppers.length;i++){
-    if(!drawSprite("enemy.shopper",shoppers[i].x,shoppers[i].y,48,48,false,0)){
-      ctx.font="38px sans-serif";ctx.fillText(shoppers[i].emoji,shoppers[i].x,shoppers[i].y);
+    var shopper=shoppers[i];
+    var shopperKey="shopper."+(shopper.spriteId||"seniorMan");
+    var shopperFlip=shopper.vx>0;
+    if(!drawSprite(shopperKey,shopper.x,shopper.y,shopper.spriteW||64,shopper.spriteH||68,shopperFlip,0)){
+      ctx.font="38px sans-serif";
+      ctx.fillText(shopper.emoji||"🧓",shopper.x,shopper.y);
     }
   }
 
@@ -1997,7 +2360,14 @@ function loop(t){
 
 function setKey(name,value){keys[name]=value;if(name==="Shoot"&&value)shoot();}
 
-document.getElementById("startBtn").addEventListener("click",function(){ensureAudio();startGame();},false);
+for(var mi=0;mi<modeInputs.length;mi++){
+  (function(index){
+    modeInputs[index].addEventListener("change",function(){
+      startMenuIndex=index;
+      updateStartMenuSelection();
+    },false);
+  })(mi);
+}
 document.getElementById("restartBtn").addEventListener("click",returnToStartScreen,false);
 document.getElementById("pauseBtn").addEventListener("click",togglePause,false);
 soundBtn.addEventListener("click",function(){
@@ -2013,6 +2383,7 @@ soundBtn.addEventListener("click",function(){
 updateSoundButton();
 
 window.addEventListener("keydown",function(e){
+  if(closeLogoSplash()){e.preventDefault();return;}
   var key=e.key,lower=(key||"").toLowerCase();
   var activeTag=document.activeElement&&document.activeElement.tagName;
   var typing=activeTag==="INPUT"||activeTag==="TEXTAREA";
