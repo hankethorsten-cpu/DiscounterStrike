@@ -741,6 +741,7 @@ var spritePaths={
   "weapon.pizza":"weapons/pizza.png",
   "weapon.wave":"weapons/wave.png",
   "weapon.watermelon":"weapons/watermelon.png",
+  "powerup.speed":"powerups/speed.png",
   "upgrade.speed":"upgrades/speed.png",
   "upgrade.life":"upgrades/life.png",
   "upgrade.ammo":"upgrades/ammo.png",
@@ -2126,8 +2127,8 @@ function draw(){
     var u=powerups[i];ctx.save();ctx.translate(u.x,u.y);
     var glow=u.type==="speed"?"rgba(80,210,255,.48)":u.type==="ketchup"?"rgba(215,35,45,.42)":u.type==="chili"?"rgba(255,92,30,.45)":"rgba(255,213,74,.45)";
     ctx.fillStyle=glow;ctx.beginPath();ctx.arc(0,0,u.r+7,0,Math.PI*2);ctx.fill();
-    var weaponSpriteKey="weapon."+u.type;
-    if(drawSprite(weaponSpriteKey,0,0,52,52,false,0)){
+    var powerupSpriteKey=(u.type==="speed")?"powerup.speed":"weapon."+u.type;
+    if(drawSprite(powerupSpriteKey,0,0,52,52,false,0)){
       // Externe Waffengrafik erfolgreich gezeichnet.
     }else if(u.type==="mustard"){
       fillRoundRect(-11,-13,22,28,6,"#ffd43b");fillRoundRect(-7,-22,14,11,3,"#f4f4f4");
