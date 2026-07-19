@@ -53,7 +53,7 @@ button:active{transform:translateY(4px);box-shadow:0 2px 0 #a98918}
 .stage-clear.show .stage-clear-text{transform:scale(1);opacity:1}
 .footer{flex:0 0 auto;display:flex;justify-content:space-between;gap:12px;font-size:10px;color:#8d99a8;padding:0 4px}.footer .release{text-align:right;white-space:nowrap}
 @media(min-width:800px){.mobile-controls,.pause-btn{display:none}}
-@media(max-width:680px){.start-grid{grid-template-columns:1fr}.start-box{padding:12px 14px}.upgrade-grid{grid-template-columns:1fr}.upgrade-card{min-height:100px}.card{padding:16px}.footer{font-size:9px}.footer>span:first-child{display:none}#startBtn{width:100%;min-height:52px}}
+@media(max-width:680px){.start-grid{grid-template-columns:1fr}.start-box{padding:12px 14px}.upgrade-grid{grid-template-columns:1fr}.upgrade-card{min-height:100px}.card{padding:16px}.footer{font-size:9px}.footer>span:first-child{display:none}}
 @media(max-height:520px){.topbar{padding:4px 6px}.brand{font-size:15px}.pill{padding:2px 5px}.mobile-controls{bottom:5px}.card{padding:13px}p{margin:5px 0}.upgrade-card{min-height:90px}}
 
 .start-intro{max-width:700px;margin:0 auto 18px;color:#b8c3d0;font-size:17px;line-height:1.45}
@@ -136,8 +136,6 @@ button:active{transform:translateY(4px);box-shadow:0 2px 0 #a98918}
 .portal-top{top:1px}
 .portal-bottom{bottom:1px}
 
-
-.run-gun-badge{position:absolute;left:12px;top:12px;z-index:14;background:rgba(20,20,24,.82);color:#ffe66a;border:2px solid #ffe66a;border-radius:8px;padding:7px 10px;font:900 12px/1.2 system-ui,sans-serif;letter-spacing:.05em;pointer-events:none;text-transform:uppercase;box-shadow:0 3px 0 rgba(0,0,0,.28)}
 </style>
 </head>
 <body>
@@ -230,14 +228,17 @@ button:active{transform:translateY(4px);box-shadow:0 2px 0 #a98918}
           </label>
         </div>
 
-        <button id="startBtn" type="button">Spiel starten</button>
+
+        <div style="margin:18px 0 12px;text-align:center">
+          <button id="startBtn" type="button" style="min-width:220px">🎮 Spiel starten</button>
+        </div>
 
         <div class="hof-panel">
           <h3 class="hof-title">🏆 Hall of Fame</h3>
           <div id="startHallOfFame" class="hof-status">Bestenliste wird geladen …</div>
         </div>
 
-        <div class="start-controls"><b>Menü:</b> A/D oder ←/→ Spielart wählen · F oder Leertaste starten<br><b>Spiel:</b> A/D oder ←/→ laufen · W oder ↑ springen · F oder Leertaste schießen · Pause mit P</div>
+        <div class="start-controls"><b>Menü:</b> A/D oder ←/→ Spielart wählen · F oder Leertaste starten<br><b>Spiel:</b> Pfeiltasten oder WASD · Schießen mit F oder Leertaste · Pause mit P</div>
       </div>
     </div>
 
@@ -283,7 +284,7 @@ button:active{transform:translateY(4px);box-shadow:0 2px 0 #a98918}
       </div>
     </div>
   </div>
-  <div class="footer"><span>Fiktives Arcade-Spiel ohne reale Marken oder Personen.</span><span class="release">Version 1.3 TEST · Run-and-Gun-Prototyp</span></div>
+  <div class="footer"><span>Fiktives Arcade-Spiel ohne reale Marken oder Personen.</span><span class="release">Version 1.2 · Levelabschluss-Sequenz</span></div>
 </div>
 
 
@@ -877,8 +878,7 @@ function updateSoundButton(){
 
 var player={
   x:75,y:250,w:62,h:40,baseSpeed:305,inv:0,facing:1,
-  weapon:null,ammo:0,shootCooldown:0,
-  velocityY:0,onGround:false
+  weapon:null,ammo:0,shootCooldown:0
 };
 
 var weaponInfo={
@@ -931,8 +931,21 @@ function resize(){
 }
 
 function buildShelves(){
-  // Run-and-Gun-Test: freie horizontale Strecke ohne Regalkollisionen.
   shelves=[];
+  // Version 1.1: sechs größere Regale mit breiten Laufwegen.
+  var rows=3;
+  var shelfH=Math.max(48,Math.min(62,H*.085));
+  var topMargin=Math.max(82,H*.16);
+  var bottomMargin=Math.max(78,H*.14);
+  var gap=(H-topMargin-bottomMargin)/(rows-1);
+  var shelfW=Math.min(390,W*.29);
+  var leftX=W*.18;
+  var rightX=W*.58;
+  for(var i=0;i<rows;i++){
+    var y=topMargin+i*gap-shelfH/2;
+    shelves.push({x:leftX,y:y,w:shelfW,h:shelfH});
+    shelves.push({x:rightX,y:y,w:shelfW,h:shelfH});
+  }
 }
 
 function currentDayName(){
@@ -1250,6 +1263,15 @@ if(logoSplash){
   logoSplash.addEventListener("click",function(){closeLogoSplash();},false);
 }
 
+var mobileStartBtn=document.getElementById("startBtn");
+if(mobileStartBtn){
+  mobileStartBtn.addEventListener("click",startGame,false);
+  mobileStartBtn.addEventListener("pointerup",function(e){
+    e.preventDefault();
+    startGame();
+  },false);
+}
+
 function startGame(){
   var nameField=document.getElementById("playerName");if(nameField)nameField.disabled=false;
   var chosenMode=selectedGameMode();
@@ -1311,7 +1333,26 @@ function seededSpawnValue(round,index,salt){
   return (x>>>0)/4294967295;
 }
 function fixedEnemySpawnY(round,index){
-  return Math.max(70,H-86);
+  var minY=48,maxY=H-48,step=34;
+  var candidates=[];
+  for(var y=minY;y<=maxY;y+=step){
+    if(!shelfHitsCircle(W+35,y,23))candidates.push(y);
+  }
+  if(!candidates.length)return H/2;
+
+  // Deterministische Fisher-Yates-Mischung für genau diese Runde.
+  for(var i=candidates.length-1;i>0;i--){
+    var j=Math.floor(seededSpawnValue(round,i,17)*(i+1));
+    var tmp=candidates[i];candidates[i]=candidates[j];candidates[j]=tmp;
+  }
+
+  // Nach einem vollständigen Durchlauf beginnt eine neue feste Variation.
+  var cycle=Math.floor(index/candidates.length);
+  var slot=index%candidates.length;
+  if(cycle>0){
+    slot=(slot+Math.floor(seededSpawnValue(round,cycle,29)*candidates.length))%candidates.length;
+  }
+  return candidates[slot];
 }
 
 function spawnEnemy(){
@@ -1347,8 +1388,11 @@ function spawnEnemy(){
 }
 
 function safePowerupY(){
-  // Power-ups schweben knapp über dem Boden.
-  return Math.max(72,H-132);
+  for(var tries=0;tries<20;tries++){
+    var y=55+Math.random()*(H-110);
+    if(!shelfHitsCircle(W+35,y,25)){return y;}
+  }
+  return H/2;
 }
 
 function countWeaponDrops(){
@@ -1388,7 +1432,7 @@ function spawnShopperDrop(){
   var maxSpeed=Math.max(minSpeed,balanceNumber("drops.shopper.maximumMovementSpeed",75));
   shoppers.push({
     x:W+50,
-    y:Math.max(70,H-86),
+    y:55+Math.random()*(H-110),
     r:shopperDef.r,
     vx:-(minSpeed+Math.random()*(maxSpeed-minSpeed)),
     emoji:shopperDef.emoji,
@@ -1404,7 +1448,7 @@ function spawnPuddleDrop(){
   var maxSpeed=Math.max(minSpeed,balanceNumber("drops.puddle.maximumMovementSpeed",77));
   puddles.push({
     x:W+30,
-    y:Math.max(70,H-42),
+    y:50+Math.random()*(H-100),
     r:balanceNumber("drops.puddle.radius",24),
     vx:-(minSpeed+Math.random()*(maxSpeed-minSpeed))
   });
@@ -1632,35 +1676,45 @@ function update(dt){
 
   processIndependentDrops(dt);
 
-  var dx=0;
-  if(keys.ArrowRight||keys.d){dx++;}
-  if(keys.ArrowLeft||keys.a){dx--;}
-  if(dx!==0)player.facing=dx>0?-1:1;
+  var dx=0,dy=0;
+  if(keys.ArrowRight||keys.d){dx++}if(keys.ArrowLeft||keys.a){dx--}
+  if(keys.ArrowDown||keys.s){dy++}if(keys.ArrowUp||keys.w){dy--}
+  if(dx||dy){var len=Math.sqrt(dx*dx+dy*dy);dx/=len;dy/=len;if(dx!==0)player.facing=dx>0?-1:1;}
   if(keys.Shoot||keys.f||keys.F||keys[" "]||keys.Spacebar){shoot();}
 
-  var groundY=Math.max(90,H-76);
-  var playerGroundY=groundY-player.h;
   var slow=1;
   for(var pi=0;pi<puddles.length;pi++){
-    if(Math.abs((player.x+player.w/2)-puddles[pi].x)<puddles[pi].r+28 && player.y+player.h>=groundY-10){
+    if(distance(player.x+player.w/2,player.y+player.h/2,puddles[pi].x,puddles[pi].y)<puddles[pi].r+25){
       slow=.55+(1-.55)*(1-puddleResistance);break;
     }
   }
   var moveSpeed=player.baseSpeed*(speedBoostTimer>0?balanceNumber("powerups.speedBoostFactor",1.55):1)*slow;
-  player.x=Math.max(12,Math.min(W-player.w-12,player.x+dx*moveSpeed*dt));
+  var nx=Math.max(6,Math.min(W-player.w-6,player.x+dx*moveSpeed*dt));
+  var rawNy=player.y+dy*moveSpeed*dt;
+  var portalHalfWidth=60;
+  var playerCenterX=nx+player.w/2;
+  var inPortalLane=Math.abs(playerCenterX-W/2)<=portalHalfWidth;
 
-  // Sidescroller-Physik: W/↑ springt, Schwerkraft zieht zum Boden.
-  if(player.y>playerGroundY){player.y=playerGroundY;player.velocityY=0;}
-  player.onGround=player.y>=playerGroundY-1;
-  if((keys.ArrowUp||keys.w)&&player.onGround){
-    player.velocityY=-520;
-    player.onGround=false;
-    playSound("pickup");
+  if(!playerHitsShelf(nx,player.y))player.x=nx;
+
+  if(inPortalLane){
+    // Im Portalbereich darf der Wagen ein Stück über den Spielfeldrand hinausfahren.
+    player.y=rawNy;
+    if(portalCooldown<=0&&player.y+player.h<0){
+      player.y=H-4;
+      portalCooldown=.55;
+      playSound("pickup");
+      burst(W/2,H-12,"","#68e7ff");
+    }else if(portalCooldown<=0&&player.y>H){
+      player.y=-player.h+4;
+      portalCooldown=.55;
+      playSound("pickup");
+      burst(W/2,12,"","#68e7ff");
+    }
+  }else{
+    var ny=Math.max(6,Math.min(H-player.h-6,rawNy));
+    if(!playerHitsShelf(player.x,ny))player.y=ny;
   }
-  player.velocityY+=1320*dt;
-  player.y+=player.velocityY*dt;
-  if(player.y>=playerGroundY){player.y=playerGroundY;player.velocityY=0;player.onGround=true;}
-  if(player.y<28){player.y=28;player.velocityY=Math.max(0,player.velocityY);}
 
   if(!game.isBoss&&enemiesSpawned<enemiesToSpawn){
     enemyTimer-=dt;
@@ -1720,17 +1774,43 @@ function update(dt){
     var factor=e.slow>0?.46:1;
     e.aiTimer-=dt;
 
-    // Run-and-Gun-Test: Gegner bleiben auf der Bodenlinie und stürmen horizontal heran.
-    var enemyGroundY=Math.max(70,H-86);
-    e.vy=0;
-    e.y=enemyGroundY;
-    if(e.ai==="boss"){
+    /*
+      Unterschiedliche Gegner-KI:
+      Rabatt-Räuber: geradlinig und berechenbar.
+      Pfand-Pirat: schnelle Zickzack-Bewegung und Ausweichen vor dem Wagen.
+      Kassen-Kobold: verfolgt aktiv die Höhe des Spielers und umgeht Regale.
+    */
+    if(e.ai==="raider"){
+      e.vx=-Math.abs(e.baseSpeed);
+      e.vy*=.94;
+    }else if(e.ai==="pirate"){
+      if(e.aiTimer<=0){
+        e.aiTimer=.35+Math.random()*.55;
+        e.zigzagDir*=-1;
+      }
+      var playerCenterY=player.y+player.h/2;
+      var closeToPlayer=Math.abs(e.x-(player.x+player.w/2))<210;
+      var evadeDir=e.y<playerCenterY?-1:1;
+      e.vx=-Math.abs(e.baseSpeed*1.08);
+      e.vy=(closeToPlayer?evadeDir:e.zigzagDir)*(80+game.stage*2);
+    }else if(e.ai==="goblin"){
+      if(e.aiTimer<=0){
+        e.aiTimer=.18;
+        e.targetY=player.y+player.h/2;
+      }
+      var diff=e.targetY-e.y;
+      e.vx=-Math.abs(e.baseSpeed*.92);
+      e.vy=Math.max(-100,Math.min(100,diff*2.2));
+    }else if(e.ai==="boss"){
+      if(e.aiTimer<=0){
+        e.aiTimer=.28;
+        e.targetY=player.y+player.h/2;
+      }
+      var bossDiff=e.targetY-e.y;
       e.vx=-Math.abs(e.baseSpeed*.78);
-      if(e.x<W*.55)e.vx=Math.abs(e.baseSpeed*.48);
-      if(e.x>W-70)e.vx=-Math.abs(e.baseSpeed*.78);
-    }else{
-      var speedFactor=e.ai==="pirate"?1.12:(e.ai==="goblin"?1.04:1);
-      e.vx=-Math.abs(e.baseSpeed*speedFactor);
+      e.vy=Math.max(-115,Math.min(115,bossDiff*1.7));
+      if(e.x<W*.48)e.vx=Math.abs(e.baseSpeed*.62);
+      if(e.x>W-65)e.vx=-Math.abs(e.baseSpeed*.78);
     }
 
     if(e.boss&&e.shootTimer<900){
@@ -2035,30 +2115,14 @@ function drawPixelShelf(s,index){
 }
 
 function draw(){
-  ctx.clearRect(0,0,W,H);
-  var groundY=Math.max(90,H-76);
-  var scroll=((performance.now()*.055)%160);
+  ctx.clearRect(0,0,W,H);ctx.fillStyle="#d7d0bd";ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle="#c8c0aa";ctx.lineWidth=1;
+  for(var x=0;x<W;x+=52){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(var y=0;y<H;y+=52){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
 
-  // Sidescroller-Hintergrund: Marktgang, entfernte Regale und Laufband-Boden.
-  ctx.fillStyle="#d8d2c2";ctx.fillRect(0,0,W,groundY);
-  ctx.fillStyle="#eee8d8";ctx.fillRect(0,0,W,70);
-  ctx.fillStyle="#b00020";ctx.fillRect(0,58,W,12);
-  for(var bx=-scroll;bx<W+180;bx+=160){
-    ctx.fillStyle="#987c58";ctx.fillRect(bx,106,118,groundY-152);
-    ctx.fillStyle="#725b42";ctx.fillRect(bx-5,100,128,12);
-    ctx.fillStyle="#f5c542";
-    for(var by=125;by<groundY-38;by+=38){
-      ctx.fillRect(bx+10,by,22,18);ctx.fillRect(bx+43,by,27,18);ctx.fillRect(bx+82,by,20,18);
-    }
+  for(var i=0;i<shelves.length;i++){
+    drawPixelShelf(shelves[i],i);
   }
-  ctx.fillStyle="#6f7378";ctx.fillRect(0,groundY,W,H-groundY);
-  ctx.fillStyle="#55595e";ctx.fillRect(0,groundY,W,8);
-  ctx.strokeStyle="#92979c";ctx.lineWidth=3;
-  for(var gx=-scroll*1.7;gx<W+80;gx+=80){ctx.beginPath();ctx.moveTo(gx,groundY+8);ctx.lineTo(gx-34,H);ctx.stroke();}
-  ctx.strokeStyle="rgba(255,255,255,.24)";ctx.lineWidth=2;
-  ctx.beginPath();ctx.moveTo(0,groundY+34);ctx.lineTo(W,groundY+34);ctx.stroke();
-
-  var i;
 
   ctx.textAlign="center";ctx.textBaseline="middle";
 
@@ -2319,29 +2383,6 @@ for(var mi=0;mi<modeInputs.length;mi++){
     },false);
   })(mi);
 }
-
-var startBtn=document.getElementById("startBtn");
-if(startBtn){
-  var startPointerHandled=false;
-  startBtn.addEventListener("pointerup",function(event){
-    if(event.pointerType==="touch"||event.pointerType==="pen"){
-      event.preventDefault();
-      startPointerHandled=true;
-      ensureAudio();
-      startGame();
-      window.setTimeout(function(){startPointerHandled=false;},400);
-    }
-  },false);
-  startBtn.addEventListener("click",function(event){
-    if(startPointerHandled){
-      event.preventDefault();
-      return;
-    }
-    ensureAudio();
-    startGame();
-  },false);
-}
-
 document.getElementById("restartBtn").addEventListener("click",returnToStartScreen,false);
 document.getElementById("pauseBtn").addEventListener("click",togglePause,false);
 soundBtn.addEventListener("click",function(){
