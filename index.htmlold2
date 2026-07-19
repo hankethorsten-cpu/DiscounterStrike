@@ -266,7 +266,7 @@ button:active{transform:translateY(4px);box-shadow:0 2px 0 #a98918}
           <div id="startHallOfFame" class="hof-status">Bestenliste wird geladen …</div>
         </div>
 
-        <div class="start-controls"><b>Menü:</b> A/D oder ←/→ Spielart wählen · F oder Leertaste starten<br><b>Spiel:</b> Pfeiltasten oder WASD · F/Leertaste schießt nach oben · G schießt waagerecht in Blickrichtung · Pause mit P</div>
+        <div class="start-controls"><b>Menü:</b> A/D oder ←/→ Spielart wählen · F oder Leertaste starten<br><b>Spiel:</b> Pfeiltasten oder WASD · Schießen mit F oder Leertaste · Pause mit P</div>
       </div>
     </div>
 
@@ -312,7 +312,7 @@ button:active{transform:translateY(4px);box-shadow:0 2px 0 #a98918}
       </div>
     </div>
   </div>
-  <div class="footer"><span>Fiktives Arcade-Spiel ohne reale Marken oder Personen.</span><span class="release">Version 2.0 TEST · Dynamische Regal- und Insel-Sprites</span></div>
+  <div class="footer"><span>Fiktives Arcade-Spiel ohne reale Marken oder Personen.</span><span class="release">Version 1.5 · Mobile Touch-Steuerung</span></div>
 </div>
 
 
@@ -651,7 +651,7 @@ var startMenuIndex=0;
 var upgradeMenuIndex=0;
 
 
-var WORLD_W=900,WORLD_H=650;
+var WORLD_W=1200,WORLD_H=650;
 var W=WORLD_W,H=WORLD_H,DPR=1;
 var VIEW_W=WORLD_W,VIEW_H=WORLD_H,CAMERA_SCALE=1,CAMERA_X=0,CAMERA_Y=0;
 var running=false,paused=false,betweenRounds=false,lastTime=0;
@@ -733,20 +733,6 @@ var soundEnabled=true,audioCtx=null,bossMusicTimer=0,bossMusicStep=0;
           projectiles/package.png
           projectiles/toilet_roll.png
           projectiles/water.png
-          scenery/
-            shelves/
-              shelf_01.png
-              shelf_02.png
-              ...
-            islands/
-              island_01.png
-              island_02.png
-              ...
-
-  Regale und Inseln werden anhand ihrer fortlaufenden Nummerierung automatisch
-  gesucht. Zulässige Rastergrößen:
-    Regale: 64 x 192 oder 64 x 224 Pixel
-    Inseln: 128 x 96 oder 128 x 128 Pixel
 
   Fehlt eine Grafik, verwendet das Spiel automatisch die bisherige
   Emoji- oder Canvas-Darstellung. Dadurch bleibt die index.html jederzeit
@@ -802,87 +788,7 @@ var spritePaths={
   "projectile.toiletRoll":"projectiles/toilet_roll.png",
   "projectile.water":"projectiles/water.png"
 };
-
 var sprites={};
-
-/*
-  UMGEBUNGS-SPRITES
-  -----------------
-  Der Browser kann Ordner nicht direkt auflisten. Deshalb sucht das Spiel
-  fortlaufend nach shelf_01.png, shelf_02.png ... beziehungsweise
-  island_01.png, island_02.png ... . Nach vier aufeinanderfolgenden Lücken
-  endet die Suche. Die Nummerierung sollte daher ohne größere Lücken erfolgen.
-*/
-var sceneryAssets={shelves:[],islands:[],loading:true};
-var SCENERY_MAX_NUMBER=99;
-var SCENERY_MAX_MISSES=4;
-
-function paddedAssetNumber(number){
-  return String(number).padStart(2,"0");
-}
-
-function loadImageCandidate(url){
-  return new Promise(function(resolve){
-    var img=new Image();
-    img.onload=function(){resolve(img);};
-    img.onerror=function(){resolve(null);};
-    img.src=url;
-  });
-}
-
-async function discoverNumberedScenery(folder,prefix,target){
-  var misses=0;
-  for(var number=1;number<=SCENERY_MAX_NUMBER&&misses<SCENERY_MAX_MISSES;number++){
-    var filename=prefix+"_"+paddedAssetNumber(number)+".png";
-    var url=SPRITE_BASE+"scenery/"+folder+"/"+filename;
-    var img=await loadImageCandidate(url);
-    if(img){
-      target.push({
-        img:img,
-        filename:filename,
-        url:url,
-        width:img.naturalWidth||img.width,
-        height:img.naturalHeight||img.height
-      });
-      misses=0;
-    }else{
-      misses++;
-    }
-  }
-}
-
-function validShelfSize(asset){
-  return asset&&asset.width===64&&(asset.height===192||asset.height===224);
-}
-
-function validIslandSize(asset){
-  return asset&&asset.width===128&&(asset.height===96||asset.height===128);
-}
-
-async function loadSceneryAssets(){
-  sceneryAssets.loading=true;
-  await Promise.all([
-    discoverNumberedScenery("shelves","shelf",sceneryAssets.shelves),
-    discoverNumberedScenery("islands","island",sceneryAssets.islands)
-  ]);
-
-  sceneryAssets.shelves=sceneryAssets.shelves.filter(function(asset){
-    if(validShelfSize(asset))return true;
-    console.warn("Regal-Sprite übersprungen (erwartet 64x192 oder 64x224):",asset.filename,asset.width+"x"+asset.height);
-    return false;
-  });
-  sceneryAssets.islands=sceneryAssets.islands.filter(function(asset){
-    if(validIslandSize(asset))return true;
-    console.warn("Insel-Sprite übersprungen (erwartet 128x96 oder 128x128):",asset.filename,asset.width+"x"+asset.height);
-    return false;
-  });
-
-  sceneryAssets.loading=false;
-  buildShelves();
-  pushPlayerOutOfShelves();
-  draw();
-}
-
 
 function loadSprites(){
   Object.keys(spritePaths).forEach(function(key){
@@ -894,7 +800,6 @@ function loadSprites(){
   });
 }
 loadSprites();
-loadSceneryAssets();
 
 function spriteReady(key){
   return !!(sprites[key]&&sprites[key].ready);
@@ -1003,7 +908,6 @@ function updateSoundButton(){
 
 var player={
   x:75,y:250,w:62,h:40,baseSpeed:305,inv:0,facing:1,
-  lookX:0,lookY:-1,
   weapon:null,ammo:0,shootCooldown:0
 };
 
@@ -1049,7 +953,7 @@ function resize(){
   var rect=stage.getBoundingClientRect();
   DPR=Math.min(window.devicePixelRatio||1,2);
 
-  // Die Spielwelt bleibt auf jedem Gerät exakt 900 x 650 groß.
+  // Die Spielwelt bleibt auf jedem Gerät exakt 1200 x 650 groß.
   // Nur die Kamera wird so skaliert, dass die komplette Welt in die Stage passt.
   W=WORLD_W;H=WORLD_H;
   VIEW_W=Math.max(1,Math.floor(rect.width));
@@ -1063,7 +967,7 @@ function resize(){
   canvas.style.width=VIEW_W+"px";
   canvas.style.height=VIEW_H+"px";
 
-  if(!shelves.length)buildShelves();
+  buildShelves();
   player.x=Math.max(8,Math.min(player.x,W-player.w-8));
   player.y=Math.max(8,Math.min(player.y,H-player.h-8));
   pushPlayerOutOfShelves();
@@ -1083,116 +987,50 @@ function resize(){
   draw();
 }
 
-
-function randomAsset(list){
-  return list&&list.length?list[Math.floor(Math.random()*list.length)]:null;
-}
-
-function obstacleCollisionBox(type,w,h){
-  /*
-    Die Kollisionsbox ist bewusst kleiner als das sichtbare Sprite:
-    Schatten, Rahmen, Preisschilder und leichte Überstände blockieren dadurch
-    weder Spieler noch Gegner.
-  */
-  if(type==="shelf"){
-    return {x:7,y:8,w:Math.max(1,w-14),h:Math.max(1,h-16)};
-  }
-  return {x:8,y:8,w:Math.max(1,w-16),h:Math.max(1,h-16)};
-}
-
-function obstacleRect(s){
-  var box=s.collision||{x:0,y:0,w:s.w,h:s.h};
-  return {
-    x:s.x+box.x,
-    y:s.y+box.y,
-    w:box.w,
-    h:box.h
-  };
-}
-
-function makeSceneryObject(type,centerX,centerY,asset,fallbackW,fallbackH){
-  var w=asset?asset.width:fallbackW;
-  var h=asset?asset.height:fallbackH;
-  return {
-    type:type,
-    x:Math.round(centerX-w/2),
-    y:Math.round(centerY-h/2),
-    w:w,
-    h:h,
-    asset:asset||null,
-    collision:obstacleCollisionBox(type,w,h)
-  };
-}
-
 function buildShelves(){
-  /*
-    Jedes Level erhält zwei Regale und eine Insel. Die Positionen wechseln
-    reproduzierbar mit dem Level; die konkreten Grafiken werden zufällig aus
-    allen gefundenen shelf_XX.png- und island_XX.png-Dateien gewählt.
-  */
   shelves=[];
+  var rows=3;
+  var shelfH=Math.max(44,Math.min(60,H*0.08));
+  var topMargin=Math.max(80,H*0.16);
+  var bottomMargin=Math.max(76,H*0.14);
+  var gap=(H-topMargin-bottomMargin)/(rows-1);
+  var margin=Math.max(18,W*0.04);
+  var aisle=Math.max(210,Math.min(320,W*0.34));
+  var shelfW=(W-margin*2-aisle)/2;
+  shelfW=Math.max(90,Math.min(320,shelfW));
+  var leftX=margin;
+  var rightX=W-margin-shelfW;
 
-  var layouts=[
-    {shelves:[[182,174],[718,452]],island:[450,317]},
-    {shelves:[[276,178],[624,448]],island:[450,331]},
-    {shelves:[[146,330],[754,330]],island:[450,161]},
-    {shelves:[[331,166],[569,482]],island:[687,277]},
-    {shelves:[[569,166],[331,482]],island:[213,277]},
-    {shelves:[[266,300],[634,300]],island:[450,478]}
-  ];
+  // Regale auf breiten Spielfeldern wieder näher zur Mitte rücken.
+  // Der mittlere Gang behält dabei stets eine sichere Mindestbreite.
+  var currentCenterGap=rightX-(leftX+shelfW);
+  var minimumCenterGap=Math.max(190,Math.min(230,W*0.28));
+  var desiredInwardShift=Math.max(0,Math.min(75,W*0.065));
+  var inwardShift=Math.min(desiredInwardShift,Math.max(0,(currentCenterGap-minimumCenterGap)/2));
+  leftX+=inwardShift;
+  rightX-=inwardShift;
 
-  var layout=layouts[Math.max(0,(game.stage-1)%layouts.length)];
-  var selectedShelfAssets=[];
-  var availableShelves=sceneryAssets.shelves.slice();
-
-  for(var i=0;i<2;i++){
-    var shelfAsset=null;
-    if(availableShelves.length){
-      var index=Math.floor(Math.random()*availableShelves.length);
-      shelfAsset=availableShelves.splice(index,1)[0];
-    }else{
-      shelfAsset=randomAsset(sceneryAssets.shelves);
-    }
-    selectedShelfAssets.push(shelfAsset);
+  for(var i=0;i<rows;i++){
+    var y=topMargin+i*gap-shelfH/2;
+    shelves.push({x:leftX,y:y,w:shelfW,h:shelfH});
+    shelves.push({x:rightX,y:y,w:shelfW,h:shelfH});
   }
-
-  for(i=0;i<layout.shelves.length;i++){
-    var shelfCenter=layout.shelves[i];
-    var asset=selectedShelfAssets[i];
-    shelves.push(makeSceneryObject(
-      "shelf",
-      shelfCenter[0],shelfCenter[1],
-      asset,
-      64,
-      i%2===0?192:224
-    ));
-  }
-
-  var islandAsset=randomAsset(sceneryAssets.islands);
-  shelves.push(makeSceneryObject(
-    "island",
-    layout.island[0],layout.island[1],
-    islandAsset,
-    128,
-    game.stage%2===0?128:96
-  ));
 }
 
 function pushPlayerOutOfShelves(){
   for(var n=0;n<8;n++){
     var moved=false;
     for(var i=0;i<shelves.length;i++){
-      var rect=obstacleRect(shelves[i]);
-      if(player.x+player.w>rect.x&&player.x<rect.x+rect.w&&player.y+player.h>rect.y&&player.y<rect.y+rect.h){
-        if(player.x+player.w/2<rect.x+rect.w/2)player.x=rect.x-player.w-6;
-        else player.x=rect.x+rect.w+6;
+      var s=shelves[i];
+      if(player.x+player.w>s.x&&player.x<s.x+s.w&&player.y+player.h>s.y&&player.y<s.y+s.h){
+        if(player.x+player.w/2<s.x+s.w/2) player.x=s.x-player.w-6;
+        else player.x=s.x+s.w+6;
         moved=true;
       }
     }
-    if(!moved)break;
+    if(!moved) break;
   }
   player.x=Math.max(8,Math.min(player.x,W-player.w-8));
-  player.y=Math.max(8,Math.min(player.y,H-player.h-8));
 }
 
 function currentDayName(){
@@ -1215,15 +1053,15 @@ function isFinalBoss(){
 
 function spawnBoss(def){
   enemies.push({
-    x:W/2,
-    y:-55,
+    x:W-80,
+    y:H/2,
     r:def.r,
     baseSpeed:def.speed+game.stage*balanceNumber("bosses.levelSpeedIncrease",.8),
-    vx:0,
-    vy:def.speed,
+    vx:-def.speed,
+    vy:0,
     ai:"boss",
     aiTimer:.35,
-    targetX:W/2,
+    targetY:H/2,
     zigzagDir:1,
     emoji:def.emoji,
     name:def.name,
@@ -1242,11 +1080,10 @@ function spawnBoss(def){
 function spawnBossWeapon(){
   var types=["mustard","ketchup","chili","pizza","wave"];
   var type=weightedChoice(types,function(id){return balanceNumber("weapons."+id+".dropRate",1);});
-  powerups.push({x:safePowerupY(),y:-30,r:23,vx:0,vy:balanceNumber("powerups.bossWeaponMovementSpeed",25),type:type});
+  powerups.push({x:Math.max(W*.58,player.x+150),y:safePowerupY(),r:23,vx:-balanceNumber("powerups.bossWeaponMovementSpeed",25),type:type});
 }
 
 function startBossBattle(def){
-  buildShelves();
   game.isBoss=true;
   betweenRounds=false;
   roundEndTimer=0;
@@ -1427,7 +1264,6 @@ function resetGame(mode){
 
 function resetWorldForRound(){
   enemies=[];shoppers=[];puddles=[];powerups=[];projectiles=[];bossProjectiles=[];chiliBombs=[];watermelons=[];splats=[];particles=[];
-  buildShelves();
   infiniteAmmoTimer=0;
   var rawEnemyCount=
     balanceNumber("rounds.baseEnemyCount",6)+
@@ -1439,7 +1275,7 @@ function resetWorldForRound(){
   hideStageClear();
   resetDropTimers();
   betweenRounds=false;paused=false;
-  player.x=W/2-player.w/2;player.y=H-player.h-26;pushPlayerOutOfShelves();player.inv=0;player.shootCooldown=0;
+  player.x=24;player.y=H/2-player.h/2;pushPlayerOutOfShelves();player.inv=0;player.shootCooldown=0;
   updateHud();
   showRoundBanner(currentDayName()+" · "+currentTimeLabel());
 }
@@ -1555,17 +1391,11 @@ function rectCircle(rx,ry,rw,rh,cx,cy,cr){
   var dx=cx-nx,dy=cy-ny;return dx*dx+dy*dy<cr*cr;
 }
 function shelfHitsCircle(cx,cy,r){
-  for(var i=0;i<shelves.length;i++){
-    var rect=obstacleRect(shelves[i]);
-    if(rectCircle(rect.x,rect.y,rect.w,rect.h,cx,cy,r))return true;
-  }
+  for(var i=0;i<shelves.length;i++){var s=shelves[i];if(rectCircle(s.x,s.y,s.w,s.h,cx,cy,r)){return true;}}
   return false;
 }
 function playerHitsShelf(nx,ny){
-  for(var i=0;i<shelves.length;i++){
-    var rect=obstacleRect(shelves[i]);
-    if(nx+player.w>rect.x&&nx<rect.x+rect.w&&ny+player.h>rect.y&&ny<rect.y+rect.h)return true;
-  }
+  for(var i=0;i<shelves.length;i++){var s=shelves[i];if(nx+player.w>s.x&&nx<s.x+s.w&&ny+player.h>s.y&&ny<s.y+s.h){return true;}}
   return false;
 }
 function distance(ax,ay,bx,by){var dx=ax-bx,dy=ay-by;return Math.sqrt(dx*dx+dy*dy);}
@@ -1588,20 +1418,20 @@ function seededSpawnValue(round,index,salt){
   return (x>>>0)/4294967295;
 }
 function fixedEnemySpawnY(round,index){
-  // Der historische Funktionsname bleibt bestehen; in der vertikalen
-  // Testvariante liefert die Funktion eine sichere X-Position.
-  var minX=48,maxX=W-48,step=46;
+  var minY=48,maxY=H-48,step=34;
   var candidates=[];
-  for(var x=minX;x<=maxX;x+=step){
-    if(!shelfHitsCircle(x,-35,23))candidates.push(x);
+  for(var y=minY;y<=maxY;y+=step){
+    if(!shelfHitsCircle(W+35,y,23))candidates.push(y);
   }
-  if(!candidates.length)return W/2;
+  if(!candidates.length)return H/2;
 
+  // Deterministische Fisher-Yates-Mischung für genau diese Runde.
   for(var i=candidates.length-1;i>0;i--){
     var j=Math.floor(seededSpawnValue(round,i,17)*(i+1));
     var tmp=candidates[i];candidates[i]=candidates[j];candidates[j]=tmp;
   }
 
+  // Nach einem vollständigen Durchlauf beginnt eine neue feste Variation.
   var cycle=Math.floor(index/candidates.length);
   var slot=index%candidates.length;
   if(cycle>0){
@@ -1619,18 +1449,17 @@ function spawnEnemy(){
   var maxIndex=Math.min(types.length-1,Math.floor((game.stage-1)/2));
   var typeIndex=Math.floor(seededSpawnValue(game.stage,enemiesSpawned,5)*(maxIndex+1));
   var t=types[typeIndex];
-  var spawnX=fixedEnemySpawnY(game.stage,enemiesSpawned);
-  var speed=t.speed+game.stage*balanceNumber("enemies.levelSpeedIncrease",2.4);
+  var spawnY=fixedEnemySpawnY(game.stage,enemiesSpawned);
   enemies.push({
-    x:spawnX,
-    y:-35,
+    x:W+35,
+    y:spawnY,
     r:22,
-    baseSpeed:speed,
-    vx:(seededSpawnValue(game.stage,enemiesSpawned,7)-.5)*30,
-    vy:speed,
+    baseSpeed:t.speed+game.stage*balanceNumber("enemies.levelSpeedIncrease",2.4),
+    vx:-(t.speed+game.stage*balanceNumber("enemies.levelSpeedIncrease",2.4)),
+    vy:(seededSpawnValue(game.stage,enemiesSpawned,7)-.5)*30,
     ai:t.id,
     aiTimer:.45+seededSpawnValue(game.stage,enemiesSpawned,11)*.8,
-    targetX:fixedEnemySpawnY(game.stage,enemiesSpawned+3),
+    targetY:fixedEnemySpawnY(game.stage,enemiesSpawned+3),
     zigzagDir:seededSpawnValue(game.stage,enemiesSpawned,13)<.5?-1:1,
     emoji:t.emoji,
     name:t.name,
@@ -1644,12 +1473,11 @@ function spawnEnemy(){
 }
 
 function safePowerupY(){
-  // Historischer Funktionsname; liefert jetzt eine freie X-Position.
   for(var tries=0;tries<20;tries++){
-    var x=55+Math.random()*(W-110);
-    if(!shelfHitsCircle(x,-35,25))return x;
+    var y=55+Math.random()*(H-110);
+    if(!shelfHitsCircle(W+35,y,25)){return y;}
   }
-  return W/2;
+  return H/2;
 }
 
 function countWeaponDrops(){
@@ -1665,22 +1493,20 @@ function spawnWeaponDrop(){
   var type=weightedChoice(types,function(id){return balanceNumber("weapons."+id+".dropRate",0);});
   if(!type)return;
   powerups.push({
-    x:safePowerupY(),
-    y:-35,
+    x:W+35,
+    y:safePowerupY(),
     r:type==="watermelon"?29:23,
-    vx:0,
-    vy:balanceNumber("drops.weapon.movementSpeed",70),
+    vx:-balanceNumber("drops.weapon.movementSpeed",70),
     type:type
   });
 }
 
 function spawnSpeedBoostDrop(){
   powerups.push({
-    x:safePowerupY(),
-    y:-35,
+    x:W+35,
+    y:safePowerupY(),
     r:22,
-    vx:0,
-    vy:balanceNumber("drops.speedBoost.movementSpeed",74),
+    vx:-balanceNumber("drops.speedBoost.movementSpeed",74),
     type:"speed"
   });
 }
@@ -1690,11 +1516,10 @@ function spawnShopperDrop(){
   var minSpeed=balanceNumber("drops.shopper.minimumMovementSpeed",48);
   var maxSpeed=Math.max(minSpeed,balanceNumber("drops.shopper.maximumMovementSpeed",75));
   shoppers.push({
-    x:55+Math.random()*(W-110),
-    y:-50,
+    x:W+50,
+    y:55+Math.random()*(H-110),
     r:shopperDef.r,
-    vx:0,
-    vy:minSpeed+Math.random()*(maxSpeed-minSpeed),
+    vx:-(minSpeed+Math.random()*(maxSpeed-minSpeed)),
     emoji:shopperDef.emoji,
     spriteId:shopperDef.id,
     spriteW:shopperDef.w,
@@ -1707,11 +1532,10 @@ function spawnPuddleDrop(){
   var minSpeed=balanceNumber("drops.puddle.minimumMovementSpeed",60);
   var maxSpeed=Math.max(minSpeed,balanceNumber("drops.puddle.maximumMovementSpeed",77));
   puddles.push({
-    x:50+Math.random()*(W-100),
-    y:-30,
+    x:W+30,
+    y:50+Math.random()*(H-100),
     r:balanceNumber("drops.puddle.radius",24),
-    vx:0,
-    vy:minSpeed+Math.random()*(maxSpeed-minSpeed)
+    vx:-(minSpeed+Math.random()*(maxSpeed-minSpeed))
   });
 }
 
@@ -1766,58 +1590,33 @@ function equipWeapon(type){
   updateHud();
 }
 
-function shoot(mode){
-  if(!running||paused||betweenRounds||!player.weapon||(player.ammo<=0&&infiniteAmmoTimer<=0)||player.shootCooldown>0)return;
-
-  var aimX=0,aimY=-1;
-  if(mode==="look"){
-    // G schießt ausschließlich waagerecht. Die letzte horizontale
-    // Blickrichtung bleibt auch bei einer Bewegung nach oben/unten erhalten.
-    aimX=player.facing<0?1:-1;
-    aimY=0;
-  }
-
+function shoot(){
+  if(!running||paused||betweenRounds||!player.weapon||(player.ammo<=0&&infiniteAmmoTimer<=0)||player.shootCooldown>0){return;}
   var type=player.weapon,info=weaponInfo[type];
   playSound(type);
   player.shootCooldown=info.cooldown*fireRateMultiplier;
   if(infiniteAmmoTimer<=0)player.ammo--;
-
-  var sx=player.x+player.w/2+aimX*16;
-  var sy=player.y+player.h/2+aimY*16;
+  var dir=player.facing===-1?1:-1;
+  var sx=player.x+player.w/2+dir*28,sy=player.y+player.h/2-3;
 
   if(type==="mustard"){
-    var mustardSpeed=balanceNumber("weapons.mustard.projectileSpeed",820);
-    projectiles.push({
-      type:"mustard",x:sx,y:sy,
-      vx:aimX*mustardSpeed,vy:aimY*mustardSpeed,
-      life:1.65,r:8,length:70,
-      damage:balanceNumber("weapons.mustard.damage",1)
-    });
+    projectiles.push({type:"mustard",x:sx,y:sy,vx:dir*balanceNumber("weapons.mustard.projectileSpeed",820),life:1.65,r:8,length:70,damage:balanceNumber("weapons.mustard.damage",1)});
   }else if(type==="ketchup"){
-    var ketchupSpeed=balanceNumber("weapons.ketchup.projectileSpeed",540);
-    projectiles.push({type:"ketchup",x:sx,y:sy,vx:aimX*ketchupSpeed,vy:aimY*ketchupSpeed,life:2.35,r:12,damage:balanceNumber("weapons.ketchup.damage",2)});
+    projectiles.push({type:"ketchup",x:sx,y:sy,vx:dir*balanceNumber("weapons.ketchup.projectileSpeed",540),life:2.35,r:12,damage:balanceNumber("weapons.ketchup.damage",2)});
   }else if(type==="chili"){
-    var chiliSpeed=balanceNumber("weapons.chili.projectileSpeed",330);
-    chiliBombs.push({x:sx,y:sy,startY:sy,vx:aimX*chiliSpeed,vy:aimY*chiliSpeed,gravity:0,life:.68,fuse:.38,state:"flying",r:11});
+    chiliBombs.push({x:sx,y:sy,startY:sy,vx:dir*balanceNumber("weapons.chili.projectileSpeed",330),vy:balanceNumber("weapons.chili.verticalSpeed",-215),gravity:balanceNumber("weapons.chili.gravity",440),life:.68,fuse:.38,state:"flying",r:11});
   }else if(type==="pizza"){
     var pizzaSpeed=balanceNumber("weapons.pizza.projectileSpeed",480);
-    if(mode==="look"){
-      projectiles.push({type:"pizza",x:sx,y:sy,vx:aimX*pizzaSpeed,vy:aimY*pizzaSpeed,life:2.35,r:24,damage:balanceNumber("weapons.pizza.damage",2),rotation:Math.atan2(aimY,aimX)});
-    }else{
-      projectiles.push({type:"pizza",x:sx,y:sy,vx:pizzaSpeed,vy:0,life:2.35,r:24,damage:balanceNumber("weapons.pizza.damage",2),rotation:0});
-      projectiles.push({type:"pizza",x:sx,y:sy,vx:-pizzaSpeed,vy:0,life:2.35,r:24,damage:balanceNumber("weapons.pizza.damage",2),rotation:Math.PI});
-      projectiles.push({type:"pizza",x:sx,y:sy,vx:0,vy:-pizzaSpeed,life:2.35,r:24,damage:balanceNumber("weapons.pizza.damage",2),rotation:-Math.PI/2});
-      projectiles.push({type:"pizza",x:sx,y:sy,vx:0,vy:pizzaSpeed,life:2.35,r:24,damage:balanceNumber("weapons.pizza.damage",2),rotation:Math.PI/2});
-    }
+    projectiles.push({type:"pizza",x:sx,y:sy,vx:pizzaSpeed,vy:0,life:2.35,r:24,damage:balanceNumber("weapons.pizza.damage",2),rotation:0});
+    projectiles.push({type:"pizza",x:sx,y:sy,vx:-pizzaSpeed,vy:0,life:2.35,r:24,damage:balanceNumber("weapons.pizza.damage",2),rotation:Math.PI});
+    projectiles.push({type:"pizza",x:sx,y:sy,vx:0,vy:-pizzaSpeed,life:2.35,r:24,damage:balanceNumber("weapons.pizza.damage",2),rotation:-Math.PI/2});
+    projectiles.push({type:"pizza",x:sx,y:sy,vx:0,vy:pizzaSpeed,life:2.35,r:24,damage:balanceNumber("weapons.pizza.damage",2),rotation:Math.PI/2});
   }else if(type==="wave"){
-    var waveSpeed=balanceNumber("weapons.wave.projectileSpeed",450);
-    projectiles.push({type:"wave",x:sx,y:sy,vx:aimX*waveSpeed,vy:aimY*waveSpeed,life:2.0,r:20,damage:balanceNumber("weapons.wave.damage",2),growth:balanceNumber("weapons.wave.growth",180)});
+    projectiles.push({type:"wave",x:sx,y:sy,vx:dir*balanceNumber("weapons.wave.projectileSpeed",450),vy:0,life:2.0,r:20,damage:balanceNumber("weapons.wave.damage",2),growth:balanceNumber("weapons.wave.growth",180)});
   }else if(type==="watermelon"){
-    var melonSpeed=balanceNumber("weapons.watermelon.projectileSpeed",330);
-    watermelons.push({x:sx,y:sy,vx:aimX*melonSpeed,vy:aimY*melonSpeed,gravity:0,r:25,life:2.15,age:0,rotation:0});
+    watermelons.push({x:sx,y:sy,vx:dir*balanceNumber("weapons.watermelon.projectileSpeed",330),vy:balanceNumber("weapons.watermelon.verticalSpeed",-265),gravity:balanceNumber("weapons.watermelon.gravity",430),r:25,life:2.15,age:0,rotation:0});
   }
-
-  if(infiniteAmmoTimer<=0&&player.ammo<=0)player.weapon=null;
+  if(infiniteAmmoTimer<=0&&player.ammo<=0){player.weapon=null;}
   updateHud();
 }
 
@@ -1940,49 +1739,6 @@ function cheatAssignWeapon(number){
   updateHud();
 }
 
-
-function steerEnemyAroundObstacles(e,dt){
-  if(e.boss)return;
-
-  var forwardSpeed=Math.max(0,e.vy||0);
-  var lookAhead=Math.max(38,Math.min(82,forwardSpeed*.42+28));
-  var testY=e.y+lookAhead;
-
-  if(!shelfHitsCircle(e.x,testY,e.r+5))return;
-
-  var preferred=e.vx<0?-1:(e.vx>0?1:(e.x<W/2?1:-1));
-  var directions=[preferred,-preferred];
-  var chosen=0;
-
-  for(var d=0;d<directions.length&&!chosen;d++){
-    var dir=directions[d];
-    for(var distance=28;distance<=210;distance+=22){
-      var testX=e.x+dir*distance;
-      if(testX<e.r+10||testX>W-e.r-10)continue;
-
-      // Es müssen mehrere Punkte des geplanten Ausweichwegs frei sein,
-      // damit der Gegner nicht direkt an der nächsten Ecke erneut festhängt.
-      if(!shelfHitsCircle(testX,e.y,e.r+4)&&
-         !shelfHitsCircle(testX,e.y+lookAhead*.55,e.r+4)&&
-         !shelfHitsCircle(testX,testY,e.r+4)){
-        chosen=dir;
-        break;
-      }
-    }
-  }
-
-  if(chosen){
-    e.vx=chosen*Math.max(125,e.baseSpeed*1.22);
-    e.vy=Math.max(30,e.baseSpeed*.42);
-    e.aiTimer=Math.max(e.aiTimer,.22);
-  }else{
-    // Seltene Sackgasse: kurz zurück und deutlich zur freien Spielfeldseite.
-    e.vy=-Math.max(42,e.baseSpeed*.38);
-    e.vx=(e.x<W/2?1:-1)*Math.max(135,e.baseSpeed*1.3);
-    e.aiTimer=.3;
-  }
-}
-
 function update(dt){
   if(infiniteAmmoTimer>0)infiniteAmmoTimer=Math.max(0,infiniteAmmoTimer-dt);
   speedBoostTimer=Math.max(0,speedBoostTimer-dt);
@@ -1998,7 +1754,7 @@ function update(dt){
     }
     if(!hasWeapon){
       if(game.isBoss)spawnBossWeapon();
-      else powerups.push({x:safePowerupY(),y:-30,r:23,vx:0,vy:67,type:"mustard"});
+      else powerups.push({x:W+35,y:safePowerupY(),r:23,vx:-67,type:"mustard"});
     }
     guaranteedWeaponTimer=game.isBoss?balanceNumber("powerups.guaranteedWeaponBossSeconds",5):balanceNumber("powerups.guaranteedWeaponNormalSeconds",9);
   }
@@ -2008,15 +1764,8 @@ function update(dt){
   var dx=0,dy=0;
   if(keys.ArrowRight||keys.d){dx++}if(keys.ArrowLeft||keys.a){dx--}
   if(keys.ArrowDown||keys.s){dy++}if(keys.ArrowUp||keys.w){dy--}
-  if(dx||dy){
-    var len=Math.sqrt(dx*dx+dy*dy);
-    dx/=len;dy/=len;
-    player.lookX=dx;
-    player.lookY=dy;
-    if(dx!==0)player.facing=dx>0?-1:1;
-  }
-  if(keys.Shoot||keys.f||keys.F||keys[" "]||keys.Spacebar){shoot("up");}
-  if(keys.g||keys.G){shoot("look");}
+  if(dx||dy){var len=Math.sqrt(dx*dx+dy*dy);dx/=len;dy/=len;if(dx!==0)player.facing=dx>0?-1:1;}
+  if(keys.Shoot||keys.f||keys.F||keys[" "]||keys.Spacebar){shoot();}
 
   var slow=1;
   for(var pi=0;pi<puddles.length;pi++){
@@ -2117,36 +1866,36 @@ function update(dt){
       Kassen-Kobold: verfolgt aktiv die Höhe des Spielers und umgeht Regale.
     */
     if(e.ai==="raider"){
-      e.vy=Math.abs(e.baseSpeed);
-      e.vx*=.94;
+      e.vx=-Math.abs(e.baseSpeed);
+      e.vy*=.94;
     }else if(e.ai==="pirate"){
       if(e.aiTimer<=0){
         e.aiTimer=.35+Math.random()*.55;
         e.zigzagDir*=-1;
       }
-      var playerCenterX=player.x+player.w/2;
-      var closeToPlayer=Math.abs(e.y-(player.y+player.h/2))<210;
-      var evadeDir=e.x<playerCenterX?-1:1;
-      e.vy=Math.abs(e.baseSpeed*1.08);
-      e.vx=(closeToPlayer?evadeDir:e.zigzagDir)*(80+game.stage*2);
+      var playerCenterY=player.y+player.h/2;
+      var closeToPlayer=Math.abs(e.x-(player.x+player.w/2))<210;
+      var evadeDir=e.y<playerCenterY?-1:1;
+      e.vx=-Math.abs(e.baseSpeed*1.08);
+      e.vy=(closeToPlayer?evadeDir:e.zigzagDir)*(80+game.stage*2);
     }else if(e.ai==="goblin"){
       if(e.aiTimer<=0){
         e.aiTimer=.18;
-        e.targetX=player.x+player.w/2;
+        e.targetY=player.y+player.h/2;
       }
-      var diff=e.targetX-e.x;
-      e.vy=Math.abs(e.baseSpeed*.92);
-      e.vx=Math.max(-100,Math.min(100,diff*2.2));
+      var diff=e.targetY-e.y;
+      e.vx=-Math.abs(e.baseSpeed*.92);
+      e.vy=Math.max(-100,Math.min(100,diff*2.2));
     }else if(e.ai==="boss"){
       if(e.aiTimer<=0){
         e.aiTimer=.28;
-        e.targetX=player.x+player.w/2;
+        e.targetY=player.y+player.h/2;
       }
-      var bossDiff=e.targetX-e.x;
-      e.vy=Math.abs(e.baseSpeed*.78);
-      e.vx=Math.max(-115,Math.min(115,bossDiff*1.7));
-      if(e.y>H*.52)e.vy=-Math.abs(e.baseSpeed*.62);
-      if(e.y<55)e.vy=Math.abs(e.baseSpeed*.78);
+      var bossDiff=e.targetY-e.y;
+      e.vx=-Math.abs(e.baseSpeed*.78);
+      e.vy=Math.max(-115,Math.min(115,bossDiff*1.7));
+      if(e.x<W*.48)e.vx=Math.abs(e.baseSpeed*.62);
+      if(e.x>W-65)e.vx=-Math.abs(e.baseSpeed*.78);
     }
 
     if(e.boss&&e.shootTimer<900){
@@ -2170,52 +1919,46 @@ function update(dt){
       }
     }
 
-    steerEnemyAroundObstacles(e,dt);
     nextX=e.x+e.vx*factor*dt;
     nextY=e.y+e.vy*factor*dt;
-
-    if(e.boss||!shelfHitsCircle(e.x,nextY,e.r)){
-      e.y=nextY;
-    }else{
-      // Nicht weiter gegen die Regalfront drücken: seitlich daran entlang.
-      var leftFree=!shelfHitsCircle(e.x-40,e.y,e.r+3);
-      var rightFree=!shelfHitsCircle(e.x+40,e.y,e.r+3);
-      var escapeDir=e.vx<0?-1:(e.vx>0?1:(e.x<W/2?1:-1));
-
-      if(escapeDir<0&&!leftFree&&rightFree)escapeDir=1;
-      if(escapeDir>0&&!rightFree&&leftFree)escapeDir=-1;
-
-      e.vx=escapeDir*Math.max(125,e.baseSpeed*1.22);
-      e.vy=Math.max(24,e.baseSpeed*.28);
-
-      var slideX=e.x+e.vx*factor*dt;
-      if(!shelfHitsCircle(slideX,e.y,e.r+1)){
-        e.x=slideX;
-      }else{
-        e.vx*=-1;
-        slideX=e.x+e.vx*factor*dt;
-        if(!shelfHitsCircle(slideX,e.y,e.r+1))e.x=slideX;
-      }
-    }
 
     if(e.boss||!shelfHitsCircle(nextX,e.y,e.r)){
       e.x=nextX;
     }else{
-      // Seitliche Kollisionen lösen und den Gegner weiter nach unten führen.
-      e.vx*=-1;
-      e.vy=Math.max(Math.abs(e.vy),e.baseSpeed*.58);
-      e.aiTimer=.18;
-      var escapeY=e.y+e.vy*factor*dt;
-      if(!shelfHitsCircle(e.x,escapeY,e.r+1))e.y=escapeY;
+      e.vx=-Math.abs(e.baseSpeed);
+      var upFree=!shelfHitsCircle(e.x,e.y-55,e.r);
+      var downFree=!shelfHitsCircle(e.x,e.y+55,e.r);
+      if(upFree&&downFree){
+        if(e.ai==="goblin"){
+          e.vy=(player.y+player.h/2<e.y?-1:1)*95;
+        }else{
+          e.vy=(Math.random()<.5?-1:1)*90;
+        }
+      }else if(upFree){
+        e.vy=-95;
+      }else if(downFree){
+        e.vy=95;
+      }else{
+        e.vy=-e.vy||90;
+      }
+      var bypassY=e.y+(e.vy>0?1:-1)*78*dt;
+      if(!shelfHitsCircle(e.x,bypassY,e.r))e.y=bypassY;
     }
 
-    if(e.x<35){e.x=35;e.vx=Math.abs(e.vx||45);}
-    if(e.x>W-35){e.x=W-35;e.vx=-Math.abs(e.vx||45);}
+    if(e.boss||!shelfHitsCircle(e.x,nextY,e.r)){
+      e.y=nextY;
+    }else{
+      e.vy*=-1;
+      e.aiTimer=.12;
+    }
+
+    if(e.y<35){e.y=35;e.vy=Math.abs(e.vy||45);}
+    if(e.y>H-35){e.y=H-35;e.vy=-Math.abs(e.vy||45);}
   }
 
-  for(i=0;i<shoppers.length;i++){shoppers[i].x+=(shoppers[i].vx||0)*dt;shoppers[i].y+=(shoppers[i].vy||0)*dt;}
-  for(i=0;i<puddles.length;i++){puddles[i].x+=(puddles[i].vx||0)*dt;puddles[i].y+=(puddles[i].vy||0)*dt;}
-  for(i=0;i<powerups.length;i++){powerups[i].x+=(powerups[i].vx||0)*dt;powerups[i].y+=(powerups[i].vy||0)*dt;}
+  for(i=0;i<shoppers.length;i++)shoppers[i].x+=shoppers[i].vx*dt;
+  for(i=0;i<puddles.length;i++)puddles[i].x+=puddles[i].vx*dt;
+  for(i=0;i<powerups.length;i++)powerups[i].x+=powerups[i].vx*dt;
 
   for(i=0;i<projectiles.length;i++){
     var pr=projectiles[i];pr.x+=pr.vx*dt;pr.y+=(pr.vy||0)*dt;pr.life-=dt;if(pr.type==="pizza")pr.rotation+=dt*7;if(pr.type==="wave")pr.r+=pr.growth*dt;
@@ -2269,14 +2012,14 @@ function update(dt){
         damageEnemy(e,99,"RAMMEN +"+e.pts,player.facing===-1?1:-1);
       }
     }
-    if(!e.hit&&e.y>H+32){e.hit=true;enemiesDefeated++;damagePlayer("Entwischt!");updateHud();}
+    if(!e.hit&&e.x<-32){e.hit=true;enemiesDefeated++;damagePlayer("Entwischt!");updateHud();}
   }
 
   for(i=0;i<shoppers.length;i++){
     var sh=shoppers[i];
     if(!sh.hit&&rectCircle(player.x,player.y,player.w,player.h,sh.x,sh.y,sh.r)){
       sh.hit=true;
-      sh.vy=170;
+      sh.vx=170;
       score=Math.max(0,score-100);
       burst(sh.x,sh.y,"-100 PUNKTE","#b00020");
       damagePlayer("Kundschaft!");
@@ -2291,32 +2034,23 @@ function update(dt){
       if(e.hit)continue;
       var hit=false;
       if(pr.type==="mustard"){
-        var velocityLength=Math.sqrt((pr.vx||0)*(pr.vx||0)+(pr.vy||0)*(pr.vy||0))||1;
-        var ux=(pr.vx||0)/velocityLength;
-        var uy=(pr.vy||0)/velocityLength;
-        var x1=pr.x-ux*pr.length;
-        var y1=pr.y-uy*pr.length;
-        var segX=pr.x-x1,segY=pr.y-y1;
-        var segLengthSq=segX*segX+segY*segY||1;
-        var projection=((e.x-x1)*segX+(e.y-y1)*segY)/segLengthSq;
-        projection=Math.max(0,Math.min(1,projection));
-        var closestX=x1+projection*segX;
-        var closestY=y1+projection*segY;
-        hit=distance(closestX,closestY,e.x,e.y)<pr.r+e.r*.75;
+        var projectileDir=pr.vx>0?1:-1;
+        var x1=pr.x-projectileDir*pr.length;
+        hit=e.x>=Math.min(x1,pr.x)-e.r&&e.x<=Math.max(x1,pr.x)+e.r&&Math.abs(pr.y-e.y)<pr.r+e.r*.75;
       }else{
         hit=distance(pr.x,pr.y,e.x,e.y)<pr.r+e.r;
       }
       if(hit){
         pr.life=0;
         if(pr.type==="wave"){
-          damageEnemy(e,2,"WELLE +"+e.pts,(pr.vy||0)>=0?1:-1);
+          damageEnemy(e,2,"WELLE +"+e.pts,(pr.vx||0)>=0?1:-1);
         }else if(pr.type==="pizza"){
-          damageEnemy(e,2,"PIZZA +"+e.pts,(pr.vy||0)>=0?1:-1);
+          damageEnemy(e,2,"PIZZA +"+e.pts,(pr.vx||0)>=0?1:-1);
         }else if(pr.type==="ketchup"){
           splats.push({x:pr.x,y:pr.y,r:58,life:4});
-          damageEnemy(e,2,"KETCHUP +"+e.pts,(pr.vy||0)>0?1:-1);
+          damageEnemy(e,2,"KETCHUP +"+e.pts,pr.vx>0?1:-1);
         }else{
-          damageEnemy(e,1,"SENF +"+e.pts,(pr.vy||0)>0?1:-1);
+          damageEnemy(e,1,"SENF +"+e.pts,pr.vx>0?1:-1);
         }
         break;
       }
@@ -2415,16 +2149,6 @@ function drawWholeWatermelon(x,y,scale,rotation){
   ctx.restore();
 }
 
-
-function drawScenerySprite(s){
-  if(!s.asset||!s.asset.img)return false;
-  ctx.save();
-  ctx.imageSmoothingEnabled=false;
-  ctx.drawImage(s.asset.img,s.x,s.y,s.w,s.h);
-  ctx.restore();
-  return true;
-}
-
 function drawPixelShelf(s,index){
   ctx.save();
   // Schlagschatten
@@ -2475,57 +2199,6 @@ function drawPixelShelf(s,index){
   ctx.restore();
 }
 
-
-function drawFruitIsland(s,index){
-  ctx.save();
-
-  // Schatten und hölzerner Sockel
-  ctx.fillStyle="rgba(50,35,20,.24)";
-  ctx.fillRect(s.x+6,s.y+7,s.w,s.h);
-  ctx.fillStyle="#6f4525";
-  ctx.fillRect(s.x,s.y,s.w,s.h);
-  ctx.fillStyle="#a96d34";
-  ctx.fillRect(s.x+7,s.y+7,s.w-14,s.h-14);
-
-  // Drei flache Obstkisten
-  var boxGap=5;
-  var boxW=(s.w-24-boxGap*2)/3;
-  var boxY=s.y+13;
-  var boxH=s.h-26;
-  var fruits=[
-    {base:"#d8aa45",emoji:"🍎"},
-    {base:"#cf8c39",emoji:"🍌"},
-    {base:"#b77732",emoji:"🍊"}
-  ];
-
-  for(var i=0;i<3;i++){
-    var bx=s.x+8+i*(boxW+boxGap);
-    ctx.fillStyle=fruits[i].base;
-    ctx.fillRect(bx,boxY,boxW,boxH);
-    ctx.fillStyle="rgba(255,255,255,.22)";
-    ctx.fillRect(bx+3,boxY+3,boxW-6,4);
-    ctx.strokeStyle="#70451f";
-    ctx.lineWidth=2;
-    ctx.strokeRect(bx+.5,boxY+.5,boxW-1,boxH-1);
-
-    ctx.font=Math.max(24,Math.floor(Math.min(boxW,boxH)*.48))+"px sans-serif";
-    ctx.textAlign="center";
-    ctx.textBaseline="middle";
-    ctx.fillText(fruits[i].emoji,bx+boxW/2,boxY+boxH/2);
-  }
-
-  // Kleines Preisschild
-  ctx.fillStyle="#fff0a6";
-  ctx.fillRect(s.x+s.w/2-23,s.y-8,46,16);
-  ctx.fillStyle="#34230f";
-  ctx.font="900 9px sans-serif";
-  ctx.textAlign="center";
-  ctx.textBaseline="middle";
-  ctx.fillText("OBST",s.x+s.w/2,s.y);
-
-  ctx.restore();
-}
-
 function draw(){
   // Zuerst die gesamte sichtbare Canvasfläche leeren und die Letterbox füllen.
   ctx.setTransform(1,0,0,1,0,0);
@@ -2545,10 +2218,7 @@ function draw(){
   for(var y=0;y<H;y+=52){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
 
   for(var i=0;i<shelves.length;i++){
-    var scenery=shelves[i];
-    if(drawScenerySprite(scenery))continue;
-    if(scenery.type==="island")drawFruitIsland(scenery,i);
-    else drawPixelShelf(scenery,i);
+    drawPixelShelf(shelves[i],i);
   }
 
   ctx.textAlign="center";ctx.textBaseline="middle";
@@ -2606,39 +2276,17 @@ function draw(){
   for(i=0;i<projectiles.length;i++){
     var pr=projectiles[i];
     if(pr.type==="mustard"){
-      var mustardVelocity=Math.sqrt((pr.vx||0)*(pr.vx||0)+(pr.vy||0)*(pr.vy||0))||1;
-      var mustardUx=(pr.vx||0)/mustardVelocity;
-      var mustardUy=(pr.vy||0)/mustardVelocity;
-      var mustardStartX=pr.x-mustardUx*pr.length;
-      var mustardStartY=pr.y-mustardUy*pr.length;
-      var normalX=-mustardUy,normalY=mustardUx;
-
-      ctx.save();
-      ctx.strokeStyle="#e0b514";
-      ctx.lineWidth=8;
-      ctx.lineCap="round";
-      ctx.beginPath();
-      ctx.moveTo(mustardStartX,mustardStartY);
-      ctx.lineTo(pr.x,pr.y);
-      ctx.stroke();
-
-      ctx.strokeStyle="#ffe66a";
-      ctx.lineWidth=3;
-      ctx.beginPath();
-      ctx.moveTo(mustardStartX+normalX,mustardStartY+normalY);
-      ctx.lineTo(pr.x+normalX,pr.y+normalY);
-      ctx.stroke();
-      ctx.restore();
+      var dir=pr.vx>0?1:-1;ctx.save();ctx.strokeStyle="#e0b514";ctx.lineWidth=8;ctx.lineCap="round";
+      ctx.beginPath();ctx.moveTo(pr.x-dir*pr.length,pr.y);ctx.lineTo(pr.x,pr.y);ctx.stroke();
+      ctx.strokeStyle="#ffe66a";ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(pr.x-dir*pr.length,pr.y-1);ctx.lineTo(pr.x,pr.y-1);ctx.stroke();ctx.restore();
     }else if(pr.type==="wave"){
-      var waveAngle=Math.atan2(pr.vy||0,pr.vx||0);
       ctx.save();
-      ctx.translate(pr.x,pr.y);
-      ctx.rotate(waveAngle);
       ctx.strokeStyle="#59d7ff";
       ctx.lineWidth=4;
       ctx.beginPath();
-      // Grundform zeigt nach rechts und wird auf die Flugrichtung gedreht.
-      ctx.arc(0,0,pr.r,-Math.PI/2,Math.PI/2);
+      var a1=(pr.vx>=0)?-Math.PI/2:Math.PI/2;
+      var a2=(pr.vx>=0)?Math.PI/2:3*Math.PI/2;
+      ctx.arc(pr.x,pr.y,pr.r,a1,a2);
       ctx.stroke();
       ctx.restore();
     }else if(pr.type==="pizza"){
@@ -2885,23 +2533,7 @@ window.addEventListener("keydown",function(e){
   if((key===" "||key==="Spacebar")&&!e.repeat){
     if(running){
       ensureAudio();
-      shoot("up");
-    }
-    e.preventDefault();
-    return;
-  }
-  if(lower==="f"&&!e.repeat){
-    if(running){
-      ensureAudio();
-      shoot("up");
-    }
-    e.preventDefault();
-    return;
-  }
-  if(lower==="g"&&!e.repeat){
-    if(running){
-      ensureAudio();
-      shoot("look");
+      shoot();
     }
     e.preventDefault();
     return;
@@ -2942,7 +2574,7 @@ window.addEventListener("keydown",function(e){
       updateHud();
     }
   }
-  if(lower!=="f"&&lower!=="g")keys[key]=true;
+  keys[key]=true;
   if(key==="ArrowUp"||key==="ArrowDown"||key==="ArrowLeft"||key==="ArrowRight"||key===" ")e.preventDefault();
 },false);
 window.addEventListener("keyup",function(e){keys[e.key]=false;},false);

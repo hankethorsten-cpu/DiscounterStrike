@@ -99,9 +99,9 @@ window.GAME_BALANCE = {
 
   enemies: {
     levelSpeedIncrease: 2.4,
-    raider: { hp: 1, speed: 76, score: 100 },
-    pirate: { hp: 2, speed: 91, score: 150 },
-    goblin: { hp: 3, speed: 105, score: 210 }
+    raider: { hp: 1, speed: 56, score: 100 },
+    pirate: { hp: 2, speed: 71, score: 150 },
+    goblin: { hp: 3, speed: 85, score: 210 }
   },
 
   bosses: {
