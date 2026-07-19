@@ -284,7 +284,7 @@ button:active{transform:translateY(4px);box-shadow:0 2px 0 #a98918}
       </div>
     </div>
   </div>
-  <div class="footer"><span>Fiktives Arcade-Spiel ohne reale Marken oder Personen.</span><span class="release">Version 1.3 · Mobile-Kamera & Regal-Layout</span></div>
+  <div class="footer"><span>Fiktives Arcade-Spiel ohne reale Marken oder Personen.</span><span class="release">Version 1.4 · Feste Spielwelt & Camera Engine</span></div>
 </div>
 
 
@@ -623,8 +623,9 @@ var startMenuIndex=0;
 var upgradeMenuIndex=0;
 
 
-var W=1200,H=650,DPR=1;
-var VIEW_SCALE=1;
+var WORLD_W=1200,WORLD_H=650;
+var W=WORLD_W,H=WORLD_H,DPR=1;
+var VIEW_W=WORLD_W,VIEW_H=WORLD_H,CAMERA_SCALE=1,CAMERA_X=0,CAMERA_Y=0;
 var running=false,paused=false,betweenRounds=false,lastTime=0;
 var score=0,lives=balanceNumber("player.startLives",3),maxLives=balanceNumber("player.startLives",3);
 var game={mode:"story",dayIndex:0,hour:7,stage:1,isBoss:false};
@@ -923,19 +924,38 @@ function fillRoundRect(x,y,w,h,r,color){ctx.fillStyle=color;roundedRectPath(ctx,
 function resize(){
   var rect=stage.getBoundingClientRect();
   DPR=Math.min(window.devicePixelRatio||1,2);
-  W=Math.max(320,Math.floor(rect.width));H=Math.max(260,Math.floor(rect.height));
-  canvas.width=Math.floor(W*DPR);canvas.height=Math.floor(H*DPR);
-  canvas.style.width=W+"px";canvas.style.height=H+"px";
-  ctx.setTransform(DPR,0,0,DPR,0,0);
-  var portrait=H>W;
-  var aspect=W/H;
-  VIEW_SCALE=1;
-  if(portrait) VIEW_SCALE=Math.max(0.78,Math.min(1,aspect/0.75));
-  else if(aspect<1.45) VIEW_SCALE=0.92;
+
+  // Die Spielwelt bleibt auf jedem Gerät exakt 1200 x 650 groß.
+  // Nur die Kamera wird so skaliert, dass die komplette Welt in die Stage passt.
+  W=WORLD_W;H=WORLD_H;
+  VIEW_W=Math.max(1,Math.floor(rect.width));
+  VIEW_H=Math.max(1,Math.floor(rect.height));
+  CAMERA_SCALE=Math.min(VIEW_W/WORLD_W,VIEW_H/WORLD_H);
+  CAMERA_X=(VIEW_W-WORLD_W*CAMERA_SCALE)/2;
+  CAMERA_Y=(VIEW_H-WORLD_H*CAMERA_SCALE)/2;
+
+  canvas.width=Math.max(1,Math.floor(VIEW_W*DPR));
+  canvas.height=Math.max(1,Math.floor(VIEW_H*DPR));
+  canvas.style.width=VIEW_W+"px";
+  canvas.style.height=VIEW_H+"px";
+
   buildShelves();
   player.x=Math.max(8,Math.min(player.x,W-player.w-8));
   player.y=Math.max(8,Math.min(player.y,H-player.h-8));
   pushPlayerOutOfShelves();
+
+  // Die sichtbaren Portalmarkierungen an die skalierte Weltkante setzen.
+  var portalTop=document.getElementById("portalTop");
+  var portalBottom=document.getElementById("portalBottom");
+  if(portalTop){
+    portalTop.style.top=Math.round(CAMERA_Y)+"px";
+    portalTop.style.width=Math.max(28,Math.round(88*CAMERA_SCALE))+"px";
+  }
+  if(portalBottom){
+    portalBottom.style.bottom="auto";
+    portalBottom.style.top=Math.round(CAMERA_Y+WORLD_H*CAMERA_SCALE-4)+"px";
+    portalBottom.style.width=Math.max(28,Math.round(88*CAMERA_SCALE))+"px";
+  }
   draw();
 }
 
@@ -2152,11 +2172,19 @@ function drawPixelShelf(s,index){
 }
 
 function draw(){
-ctx.save();
-ctx.translate(W/2,H/2);
-ctx.scale(VIEW_SCALE,VIEW_SCALE);
-ctx.translate(-W/2,-H/2);
-  ctx.clearRect(0,0,W,H);ctx.fillStyle="#d7d0bd";ctx.fillRect(0,0,W,H);
+  // Zuerst die gesamte sichtbare Canvasfläche leeren und die Letterbox füllen.
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle="#10141a";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  // Danach ausschließlich die feste 1200-x-650-Spielwelt skalieren und zentrieren.
+  ctx.save();
+  ctx.setTransform(
+    DPR*CAMERA_SCALE,0,0,DPR*CAMERA_SCALE,
+    DPR*CAMERA_X,DPR*CAMERA_Y
+  );
+  ctx.fillStyle="#d7d0bd";ctx.fillRect(0,0,W,H);
   ctx.strokeStyle="#c8c0aa";ctx.lineWidth=1;
   for(var x=0;x<W;x+=52){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
   for(var y=0;y<H;y+=52){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
