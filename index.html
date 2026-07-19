@@ -53,8 +53,36 @@ button:active{transform:translateY(4px);box-shadow:0 2px 0 #a98918}
 .stage-clear.show .stage-clear-text{transform:scale(1);opacity:1}
 .footer{flex:0 0 auto;display:flex;justify-content:space-between;gap:12px;font-size:10px;color:#8d99a8;padding:0 4px}.footer .release{text-align:right;white-space:nowrap}
 @media(min-width:800px){.mobile-controls,.pause-btn{display:none}}
+@media(max-width:799px){
+  /*
+    Die Touch-Steuerung ist an den sichtbaren Browser-Viewport gebunden.
+    Dadurch bleibt sie auch auf iPhones im Querformat erreichbar, selbst wenn
+    die Browserleiste die nutzbare Höhe verkleinert.
+  */
+  .mobile-controls{
+    position:fixed;
+    left:max(10px,env(safe-area-inset-left));
+    right:max(10px,env(safe-area-inset-right));
+    bottom:max(10px,env(safe-area-inset-bottom));
+    z-index:7;
+  }
+}
+@media(max-width:799px) and (orientation:landscape){
+  .mobile-controls{
+    left:max(12px,env(safe-area-inset-left));
+    right:max(12px,env(safe-area-inset-right));
+    bottom:max(8px,env(safe-area-inset-bottom));
+  }
+  .dpad{width:138px;height:106px}
+  .ctrl{width:46px;height:46px;border-radius:12px;font-size:21px}
+  .up{left:46px;top:0}
+  .left{left:0;top:48px}
+  .down{left:46px;top:48px}
+  .right{left:92px;top:48px}
+  .action{width:62px;height:62px;font-size:25px}
+}
 @media(max-width:680px){.start-grid{grid-template-columns:1fr}.start-box{padding:12px 14px}.upgrade-grid{grid-template-columns:1fr}.upgrade-card{min-height:100px}.card{padding:16px}.footer{font-size:9px}.footer>span:first-child{display:none}}
-@media(max-height:520px){.topbar{padding:4px 6px}.brand{font-size:15px}.pill{padding:2px 5px}.mobile-controls{bottom:5px}.card{padding:13px}p{margin:5px 0}.upgrade-card{min-height:90px}}
+@media(max-height:520px){.topbar{padding:4px 6px}.brand{font-size:15px}.pill{padding:2px 5px}.card{padding:13px}p{margin:5px 0}.upgrade-card{min-height:90px}}
 
 .start-intro{max-width:700px;margin:0 auto 18px;color:#b8c3d0;font-size:17px;line-height:1.45}
 .start-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0 18px;text-align:left}
@@ -284,7 +312,7 @@ button:active{transform:translateY(4px);box-shadow:0 2px 0 #a98918}
       </div>
     </div>
   </div>
-  <div class="footer"><span>Fiktives Arcade-Spiel ohne reale Marken oder Personen.</span><span class="release">Version 1.4 · Feste Spielwelt & Camera Engine</span></div>
+  <div class="footer"><span>Fiktives Arcade-Spiel ohne reale Marken oder Personen.</span><span class="release">Version 1.5 · Mobile Touch-Steuerung</span></div>
 </div>
 
 
