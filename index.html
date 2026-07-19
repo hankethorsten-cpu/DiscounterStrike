@@ -284,7 +284,7 @@ button:active{transform:translateY(4px);box-shadow:0 2px 0 #a98918}
       </div>
     </div>
   </div>
-  <div class="footer"><span>Fiktives Arcade-Spiel ohne reale Marken oder Personen.</span><span class="release">Version 1.2 · Levelabschluss-Sequenz</span></div>
+  <div class="footer"><span>Fiktives Arcade-Spiel ohne reale Marken oder Personen.</span><span class="release">Version 1.3 · Mobile-Kamera & Regal-Layout</span></div>
 </div>
 
 
@@ -624,6 +624,7 @@ var upgradeMenuIndex=0;
 
 
 var W=1200,H=650,DPR=1;
+var VIEW_SCALE=1;
 var running=false,paused=false,betweenRounds=false,lastTime=0;
 var score=0,lives=balanceNumber("player.startLives",3),maxLives=balanceNumber("player.startLives",3);
 var game={mode:"story",dayIndex:0,hour:7,stage:1,isBoss:false};
@@ -918,6 +919,7 @@ function roundedRectPath(c,x,y,w,h,r){
 }
 function fillRoundRect(x,y,w,h,r,color){ctx.fillStyle=color;roundedRectPath(ctx,x,y,w,h,r);ctx.fill();}
 
+
 function resize(){
   var rect=stage.getBoundingClientRect();
   DPR=Math.min(window.devicePixelRatio||1,2);
@@ -925,27 +927,62 @@ function resize(){
   canvas.width=Math.floor(W*DPR);canvas.height=Math.floor(H*DPR);
   canvas.style.width=W+"px";canvas.style.height=H+"px";
   ctx.setTransform(DPR,0,0,DPR,0,0);
+  var portrait=H>W;
+  var aspect=W/H;
+  VIEW_SCALE=1;
+  if(portrait) VIEW_SCALE=Math.max(0.78,Math.min(1,aspect/0.75));
+  else if(aspect<1.45) VIEW_SCALE=0.92;
   buildShelves();
-  player.x=Math.min(player.x,W-player.w-7);player.y=Math.min(player.y,H-player.h-7);
+  player.x=Math.max(8,Math.min(player.x,W-player.w-8));
+  player.y=Math.max(8,Math.min(player.y,H-player.h-8));
+  pushPlayerOutOfShelves();
   draw();
 }
 
 function buildShelves(){
   shelves=[];
-  // Version 1.1: sechs größere Regale mit breiten Laufwegen.
   var rows=3;
-  var shelfH=Math.max(48,Math.min(62,H*.085));
-  var topMargin=Math.max(82,H*.16);
-  var bottomMargin=Math.max(78,H*.14);
+  var shelfH=Math.max(44,Math.min(60,H*0.08));
+  var topMargin=Math.max(80,H*0.16);
+  var bottomMargin=Math.max(76,H*0.14);
   var gap=(H-topMargin-bottomMargin)/(rows-1);
-  var shelfW=Math.min(390,W*.29);
-  var leftX=W*.18;
-  var rightX=W*.58;
+  var margin=Math.max(18,W*0.04);
+  var aisle=Math.max(210,Math.min(320,W*0.34));
+  var shelfW=(W-margin*2-aisle)/2;
+  shelfW=Math.max(90,Math.min(320,shelfW));
+  var leftX=margin;
+  var rightX=W-margin-shelfW;
+
+  // Regale auf breiten Spielfeldern wieder näher zur Mitte rücken.
+  // Der mittlere Gang behält dabei stets eine sichere Mindestbreite.
+  var currentCenterGap=rightX-(leftX+shelfW);
+  var minimumCenterGap=Math.max(190,Math.min(230,W*0.28));
+  var desiredInwardShift=Math.max(0,Math.min(75,W*0.065));
+  var inwardShift=Math.min(desiredInwardShift,Math.max(0,(currentCenterGap-minimumCenterGap)/2));
+  leftX+=inwardShift;
+  rightX-=inwardShift;
+
   for(var i=0;i<rows;i++){
     var y=topMargin+i*gap-shelfH/2;
     shelves.push({x:leftX,y:y,w:shelfW,h:shelfH});
     shelves.push({x:rightX,y:y,w:shelfW,h:shelfH});
   }
+}
+
+function pushPlayerOutOfShelves(){
+  for(var n=0;n<8;n++){
+    var moved=false;
+    for(var i=0;i<shelves.length;i++){
+      var s=shelves[i];
+      if(player.x+player.w>s.x&&player.x<s.x+s.w&&player.y+player.h>s.y&&player.y<s.y+s.h){
+        if(player.x+player.w/2<s.x+s.w/2) player.x=s.x-player.w-6;
+        else player.x=s.x+s.w+6;
+        moved=true;
+      }
+    }
+    if(!moved) break;
+  }
+  player.x=Math.max(8,Math.min(player.x,W-player.w-8));
 }
 
 function currentDayName(){
@@ -1190,7 +1227,7 @@ function resetWorldForRound(){
   hideStageClear();
   resetDropTimers();
   betweenRounds=false;paused=false;
-  player.x=70;player.y=Math.max(55,H/2-player.h/2);player.inv=0;player.shootCooldown=0;
+  player.x=24;player.y=H/2-player.h/2;pushPlayerOutOfShelves();player.inv=0;player.shootCooldown=0;
   updateHud();
   showRoundBanner(currentDayName()+" · "+currentTimeLabel());
 }
@@ -2115,6 +2152,10 @@ function drawPixelShelf(s,index){
 }
 
 function draw(){
+ctx.save();
+ctx.translate(W/2,H/2);
+ctx.scale(VIEW_SCALE,VIEW_SCALE);
+ctx.translate(-W/2,-H/2);
   ctx.clearRect(0,0,W,H);ctx.fillStyle="#d7d0bd";ctx.fillRect(0,0,W,H);
   ctx.strokeStyle="#c8c0aa";ctx.lineWidth=1;
   for(var x=0;x<W;x+=52){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
@@ -2364,6 +2405,7 @@ function draw(){
     else{ctx.fillStyle=q.color;ctx.fillRect(q.x,q.y,q.size,q.size);}
   }
   ctx.globalAlpha=1;
+ctx.restore();
 }
 
 function loop(t){
