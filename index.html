@@ -170,19 +170,19 @@ button:active{transform:translateY(4px);box-shadow:0 2px 0 #a98918}
 <div class="app">
   <div class="topbar">
     <div class="retro-lives life-display" id="lifeDisplay" aria-label="Verbleibende Leben"></div>
-    <div class="brand">Discounter <span>Strike</span></div>
+    <div class="brand" id="brandTitle">Discounter <span>Strike</span></div>
     <div class="retro-score">
-      <div>PUNKTE: <span id="score">000000</span></div>
-      <div>LEVEL: <span id="round">01</span></div>
+      <div><span id="hudScoreLabel">PUNKTE</span>: <span id="score">000000</span></div>
+      <div><span id="hudLevelLabel">LEVEL</span>: <span id="round">01</span></div>
     </div>
   </div>
   <div class="stats">
-    <div class="pill">Tag <span id="day">Montag</span></div>
-    <div class="pill">Uhrzeit <span id="time">07:00 Uhr</span></div>
-    <div class="pill">Gegner <span id="progress">0/0</span></div>
-    <div class="pill">Waffe <span id="weapon">keine</span></div>
-    <div class="pill">Munition <span id="ammo">0</span></div>
-    <div class="pill">Tempo <span id="speed">normal</span></div>
+    <div class="pill"><span id="hudDayLabel">Tag</span> <span id="day">Montag</span></div>
+    <div class="pill"><span id="hudTimeLabel">Uhrzeit</span> <span id="time">07:00 Uhr</span></div>
+    <div class="pill"><span id="hudEnemiesLabel">Gegner</span> <span id="progress">0/0</span></div>
+    <div class="pill"><span id="hudWeaponLabel">Waffe</span> <span id="weapon">keine</span></div>
+    <div class="pill"><span id="hudAmmoLabel">Munition</span> <span id="ammo">0</span></div>
+    <div class="pill"><span id="hudSpeedLabel">Tempo</span> <span id="speed">normal</span></div>
     <div class="pill hidden" id="cheatPill"><span id="cheat">Cheat an</span></div>
     <button class="sound-toggle" id="soundBtn" type="button" aria-label="Sound umschalten">🔊 Sound</button>
   </div>
@@ -217,41 +217,41 @@ button:active{transform:translateY(4px);box-shadow:0 2px 0 #a98918}
 
     <div class="overlay" id="startScreen">
       <div class="card">
-        <h1>Discounter <b>Strike</b></h1>
-        <p class="start-intro">Verteidige den Discounter von Montag, 07:00 Uhr bis zum Ladenschluss – oder spiele ohne Ende weiter.</p>
+        <h1 id="startHeading">Discounter <b>Strike</b></h1>
+        <p class="start-intro" id="startIntro">Verteidige den Discounter von Montag, 07:00 Uhr bis zum Ladenschluss – oder spiele ohne Ende weiter.</p>
 
         <div class="start-grid">
           <div class="start-box">
-            <h3>🛒 Ziel</h3>
-            <p>Weiche Kunden und Hindernissen aus und erreiche das Ende jeder Runde.</p>
+            <h3 id="startBoxTitle0">🛒 Ziel</h3>
+            <p id="startBoxText0">Weiche Kunden und Hindernissen aus und erreiche das Ende jeder Runde.</p>
           </div>
           <div class="start-box">
-            <h3>🔫 Waffen</h3>
-            <p>Senf, Ketchup, Chili, Pizza, Schallwelle und die seltene Wassermelone.</p>
+            <h3 id="startBoxTitle1">🔫 Waffen</h3>
+            <p id="startBoxText1">Senf, Ketchup, Chili, Pizza, Schallwelle und die seltene Wassermelone.</p>
           </div>
           <div class="start-box">
-            <h3>👾 Gegner</h3>
-            <p>Rabatt-Räuber, Pfand-Piraten und Kassen-Kobolde verhalten sich unterschiedlich.</p>
+            <h3 id="startBoxTitle2">👾 Gegner</h3>
+            <p id="startBoxText2">Rabatt-Räuber, Pfand-Piraten und Kassen-Kobolde verhalten sich unterschiedlich.</p>
           </div>
           <div class="start-box">
-            <h3>⬆️ Upgrades</h3>
-            <p>Wähle nach jeder Runde eine dauerhafte Verbesserung für deinen Wagen.</p>
+            <h3 id="startBoxTitle3">⬆️ Upgrades</h3>
+            <p id="startBoxText3">Wähle nach jeder Runde eine dauerhafte Verbesserung für deinen Wagen.</p>
           </div>
         </div>
 
-        <div class="mode-select" aria-label="Spielmodus">
+        <div class="mode-select" id="modeSelect" aria-label="Spielmodus">
           <label class="mode-option">
             <input type="radio" name="gameMode" value="story" checked>
             <span class="mode-card">
-              <strong>📖 Storymodus</strong>
-              <small>Montag von 07:00 bis 24:00 Uhr. Das Spiel endet nach der Reinigungsmaschine.</small>
+              <strong id="storyModeTitle">📖 Storymodus</strong>
+              <small id="storyModeText">Montag von 07:00 bis 24:00 Uhr. Das Spiel endet nach der Reinigungsmaschine.</small>
             </span>
           </label>
           <label class="mode-option">
             <input type="radio" name="gameMode" value="endless">
             <span class="mode-card">
-              <strong>♾️ Endlosmodus</strong>
-              <small>Nach Montag geht es mit Dienstag, Mittwoch und den folgenden Tagen weiter.</small>
+              <strong id="endlessModeTitle">♾️ Endlosmodus</strong>
+              <small id="endlessModeText">Nach Montag geht es mit Dienstag, Mittwoch und den folgenden Tagen weiter.</small>
             </span>
           </label>
         </div>
@@ -266,41 +266,41 @@ button:active{transform:translateY(4px);box-shadow:0 2px 0 #a98918}
           <div id="startHallOfFame" class="hof-status">Bestenliste wird geladen …</div>
         </div>
 
-        <div class="start-controls"><b>Menü:</b> A/D oder ←/→ Spielart wählen · F oder Leertaste starten<br><b>Spiel:</b> Pfeiltasten oder WASD · F/Leertaste schießt nach oben · G schießt waagerecht in Blickrichtung · Pause mit P</div>
+        <div class="start-controls" id="startControls"><b>Menü:</b> A/D oder ←/→ Spielart wählen · F oder Leertaste starten<br><b>Spiel:</b> Pfeiltasten oder WASD · F/Leertaste schießt nach oben · G schießt waagerecht in Blickrichtung · Pause mit P</div>
       </div>
     </div>
 
     <div class="overlay hidden" id="pauseScreen">
       <div class="card">
-        <h1>Spiel <b>pausiert</b></h1>
-        <p>Drücke P oder tippe erneut auf den Pause-Knopf.</p>
+        <h1 id="pauseHeading">Spiel <b>pausiert</b></h1>
+        <p id="pauseText">Drücke P oder tippe erneut auf den Pause-Knopf.</p>
       </div>
     </div>
 
     <div class="overlay hidden" id="upgradeScreen">
       <div class="card">
         <h2 id="upgradeTitle">07:00 Uhr geschafft!</h2>
-        <p>Wähle ein dauerhaftes Einkaufswagen-Upgrade:</p>
+        <p id="upgradeInstruction">Wähle ein dauerhaftes Einkaufswagen-Upgrade:</p>
         <div class="upgrade-grid" id="upgradeGrid"></div>
       </div>
     </div>
 
     <div class="overlay hidden" id="gameOverScreen">
       <div class="card">
-        <h1 id="gameOverTitle">Kasse <b>geschlossen</b></h1>
+        <h1 id="gameOverTitle"> <b>geschlossen</b></h1>
         <p id="finalText" class="final-score"></p>
 
         <div class="score-entry" id="scoreEntryBox">
           <div id="cheatSaveWarning" class="cheat-save-warning hidden">
-            <strong>😠 SCHÄM DICH!</strong>
-            <span>Du hast in diesem Spiel den Cheatmodus benutzt. Dein Ergebnis wird ausschließlich in der Hall of Shame gespeichert.</span>
+            <strong id="cheatWarningTitle">😠 SCHÄM DICH!</strong>
+            <span id="cheatWarningText">Du hast in diesem Spiel den Cheatmodus benutzt. Dein Ergebnis wird ausschließlich in der Hall of Shame gespeichert.</span>
           </div>
-          <label for="playerName">Name für die Hall of Fame</label>
+          <label id="playerNameLabel" for="playerName">Name für die Hall of Fame</label>
           <input id="playerName" type="text" maxlength="20" autocomplete="nickname" enterkeyhint="done" placeholder="Dein Name">
           <div class="char-count"><span id="nameLength">0</span>/20 Zeichen</div>
           <div class="hof-actions">
             <button id="saveScoreBtn" type="button">Punkte speichern</button>
-            <button id="restartBtn" class="secondary-btn" type="button">Nicht speichern · Zum Startbildschirm</button>
+            <button id="restartBtn" class="secondary-btn" type="button">Nicht speichern</button>
           </div>
           <p id="saveStatus" class="save-status"></p>
         </div>
@@ -312,9 +312,105 @@ button:active{transform:translateY(4px);box-shadow:0 2px 0 #a98918}
       </div>
     </div>
   </div>
-  <div class="footer"><span>Fiktives Arcade-Spiel ohne reale Marken oder Personen.</span><span class="release">Version 2.0 TEST · Dynamische Regal- und Insel-Sprites</span></div>
+  <div class="footer"><span id="footerNotice">Fiktives Arcade-Spiel ohne reale Marken oder Personen.</span><span class="release">Version 2.1 · Vertikal · nummerierte Bosse/Projektile · Theme-Datei</span></div>
 </div>
 
+
+
+<script>
+(function(){
+  "use strict";
+  var requested=(new URLSearchParams(window.location.search).get("theme")||"").replace(/[^a-z0-9_-]/gi,"");
+  var active=requested||localStorage.getItem("discounterStrikeTheme")||"discounter";
+  window.ACTIVE_GAME_THEME=active;
+  document.write('<script src="sprites/'+active+'/theme.js"><\/script>');
+})();
+</script>
+<script>
+(function(){
+  "use strict";
+  var T=window.GAME_THEME||{};
+  window.themeText=function(path,fallback){
+    var value=T;
+    var parts=String(path||"").split(".");
+    for(var i=0;i<parts.length;i++){
+      if(!parts[i])continue;
+      if(value==null||typeof value!=="object"||!(parts[i] in value))return fallback;
+      value=value[parts[i]];
+    }
+    return value==null?fallback:value;
+  };
+  window.themeFormat=function(path,fallback,values){
+    var result=String(window.themeText(path,fallback));
+    values=values||{};
+    Object.keys(values).forEach(function(key){
+      result=result.replace(new RegExp("\\{"+key+"\\}","g"),String(values[key]));
+    });
+    return result;
+  };
+})();
+</script>
+
+
+<script>
+(function(){
+  "use strict";
+  function setText(id,path,fallback){
+    var el=document.getElementById(id);
+    if(el)el.textContent=window.themeText(path,fallback);
+  }
+  function setHtml(id,path,fallback){
+    var el=document.getElementById(id);
+    if(el)el.innerHTML=window.themeText(path,fallback);
+  }
+  function applyTheme(){
+    document.title=window.themeText("game.title","Discounter Strike");
+    var brand=document.getElementById("brandTitle");
+    if(brand)brand.innerHTML=window.themeText("game.titleFirst","Discounter")+' <span>'+window.themeText("game.titleSecond","Strike")+'</span>';
+    setText("hudScoreLabel","hud.score","PUNKTE");
+    setText("hudLevelLabel","hud.level","LEVEL");
+    setText("hudDayLabel","hud.day","Tag");
+    setText("hudTimeLabel","hud.time","Uhrzeit");
+    setText("hudEnemiesLabel","hud.enemies","Gegner");
+    setText("hudWeaponLabel","hud.weapon","Waffe");
+    setText("hudAmmoLabel","hud.ammo","Munition");
+    setText("hudSpeedLabel","hud.speed","Tempo");
+    var heading=document.getElementById("startHeading");
+    if(heading)heading.innerHTML=window.themeText("start.headingFirst","Discounter")+' <b>'+window.themeText("start.headingSecond","Strike")+'</b>';
+    setText("startIntro","start.intro","");
+    for(var i=0;i<4;i++){
+      setText("startBoxTitle"+i,"start.boxes."+i+".title","");
+      setText("startBoxText"+i,"start.boxes."+i+".text","");
+    }
+    var mode=document.getElementById("modeSelect");
+    if(mode)mode.setAttribute("aria-label",window.themeText("start.modeAria","Spielmodus"));
+    setText("storyModeTitle","start.storyTitle","📖 Storymodus");
+    setText("storyModeText","start.storyText","");
+    setText("endlessModeTitle","start.endlessTitle","♾️ Endlosmodus");
+    setText("endlessModeText","start.endlessText","");
+    setText("startBtn","start.startButton","🎮 Spiel starten");
+    setHtml("startControls","start.controls","");
+    var pauseHeading=document.getElementById("pauseHeading");
+    if(pauseHeading)pauseHeading.innerHTML=window.themeText("pause.titleFirst","Spiel")+' <b>'+window.themeText("pause.titleSecond","pausiert")+'</b>';
+    setHtml("pauseText","pause.text","");
+    setText("upgradeInstruction","upgradeScreen.instruction","");
+    setText("footerNotice","game.footerNotice","");
+    setText("cheatWarningTitle","hallOfFame.cheatWarningTitle","😠 SCHÄM DICH!");
+    setText("cheatWarningText","hallOfFame.cheatWarningText","");
+    setText("playerNameLabel","hallOfFame.playerLabel","Name für die Hall of Fame");
+    var playerName=document.getElementById("playerName");
+    if(playerName)playerName.placeholder=window.themeText("hallOfFame.playerPlaceholder","Dein Name");
+    var splash=document.getElementById("logoSplashImage");
+    if(splash)splash.alt=window.themeText("game.splashAlt","Titelbild");
+    var hint=document.querySelector(".logo-splash-hint");
+    if(hint)hint.textContent=window.themeText("game.splashHint","Beliebige Taste oder Klick");
+    var life=document.getElementById("lifeDisplay");
+    if(life)life.setAttribute("aria-label",window.themeText("hud.remainingLives","Verbleibende Leben"));
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",applyTheme);
+  else applyTheme();
+})();
+</script>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
@@ -334,6 +430,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const scoresRef = collection(db, "highscores");
+const themeText = window.themeText || ((path, fallback) => fallback);
 
 let allScores = [];
 let visibleScores = [];
@@ -378,7 +475,7 @@ function applyModeToPanels() {
   document.querySelectorAll(".hof-panel").forEach(panel => {
     panel.classList.toggle("shame-mode", shameMode);
     const title = panel.querySelector(".hof-title");
-    if (title) title.textContent = shameMode ? "💀 Hall of Shame" : "🏆 Hall of Fame";
+    if (title) title.textContent = shameMode ? themeText("hallOfFame.shameTitle","💀 Hall of Shame") : themeText("hallOfFame.title","🏆 Hall of Fame");
   });
 }
 
@@ -394,8 +491,8 @@ function renderHallOfFame(target) {
   if (!visibleScores.length) {
     target.className = "hof-status";
     target.textContent = shameMode
-      ? "Noch keine ertappten Schummler vorhanden."
-      : "Noch keine Einträge – sichere dir den ersten Platz!";
+      ? themeText("hallOfFame.shameEmpty","Noch keine ertappten Schummler vorhanden.")
+      : themeText("hallOfFame.empty","Noch keine Einträge – sichere dir den ersten Platz!");
     return;
   }
   target.className = "hof-list";
@@ -421,8 +518,8 @@ function showModeToast() {
   if (!shameToast) return;
   window.clearTimeout(toastTimer);
   shameToast.innerHTML = shameMode
-    ? '⚠ CHEATER ERKANNT<small>Hall of Shame geöffnet</small>'
-    : '✓ CHEATER-ANSICHT BEENDET<small>Normale Hall of Fame wiederhergestellt</small>';
+    ? themeText("hallOfFame.shameOpened","⚠ CHEATER ERKANNT")+'<small>'+themeText("hallOfFame.shameOpenedSub","Hall of Shame geöffnet")+'</small>'
+    : themeText("hallOfFame.shameClosed","✓ CHEATER-ANSICHT BEENDET")+'<small>'+themeText("hallOfFame.shameClosedSub","Normale Hall of Fame wiederhergestellt")+'</small>';
   shameToast.classList.remove("hidden");
   toastTimer = window.setTimeout(() => shameToast.classList.add("hidden"), 2300);
 }
@@ -441,13 +538,13 @@ window.resetHighscoreGameState = function() {
   if (cheatSaveWarning) cheatSaveWarning.classList.add("hidden");
   if (saveButton) {
     saveButton.disabled = false;
-    saveButton.textContent = "Punkte speichern";
+    saveButton.textContent = themeText("hallOfFame.save","Punkte speichern");
   }
   if (nameInput) nameInput.disabled = false;
   if (saveStatus) saveStatus.textContent = "";
   if (scoreEntryBox) {
     const label = scoreEntryBox.querySelector('label[for="playerName"]');
-    if (label) label.textContent = "Name für die Hall of Fame";
+    if (label) label.textContent = themeText("hallOfFame.playerLabel","Name für die Hall of Fame");
   }
 };
 
@@ -474,7 +571,7 @@ async function loadScores() {
     [startList, gameOverList].forEach(target => {
       if (!target) return;
       target.className = "hof-status";
-      target.textContent = "Bestenliste derzeit nicht erreichbar.";
+      target.textContent = themeText("hallOfFame.unavailable","Bestenliste derzeit nicht erreichbar.");
     });
   }
 }
@@ -487,14 +584,14 @@ window.prepareHallOfFame = function(score, round, cheated) {
   highlightedId = "";
   saveButton.disabled = false;
   nameInput.disabled = false;
-  saveButton.textContent = currentGameCheated ? "Trotzdem speichern" : "Punkte speichern";
+  saveButton.textContent = currentGameCheated ? themeText("hallOfFame.saveCheated","Trotzdem speichern") : themeText("hallOfFame.save","Punkte speichern");
   saveStatus.textContent = "";
   scoreEntryBox.style.display = "";
   cheatSaveWarning.classList.toggle("hidden", !currentGameCheated);
   const label = scoreEntryBox.querySelector('label[for="playerName"]');
   if (label) label.textContent = currentGameCheated
-    ? "Name für die Hall of Shame"
-    : "Name für die Hall of Fame";
+    ? themeText("hallOfFame.shamePlayerLabel","Name für die Hall of Shame")
+    : themeText("hallOfFame.playerLabel","Name für die Hall of Fame");
   const rememberedName = (localStorage.getItem("discounterStrikePlayerName") || "").slice(0, 20);
   nameInput.value = rememberedName;
   nameLength.textContent = String(nameInput.value.length);
@@ -509,17 +606,17 @@ async function saveScore() {
   nameLength.textContent = String(name.length);
 
   if (!name) {
-    saveStatus.textContent = "Bitte gib einen Namen ein.";
+    saveStatus.textContent = themeText("hallOfFame.enterName","Bitte gib einen Namen ein.");
     nameInput.focus();
     return;
   }
 
   saving = true;
   saveButton.disabled = true;
-  saveButton.textContent = "Wird gespeichert …";
+  saveButton.textContent = themeText("hallOfFame.saving","Wird gespeichert …");
   saveStatus.textContent = currentGameCheated
-    ? "Der Schummelzettel wird in die Hall of Shame getragen …"
-    : "Deine Punkte werden an die Kasse übermittelt.";
+    ? themeText("hallOfFame.transmittingCheated","Der Schummelzettel wird in die Hall of Shame getragen …")
+    : themeText("hallOfFame.transmitting","Deine Punkte werden an die Kasse übermittelt.");
 
   try {
     const result = await addDoc(scoresRef, {
@@ -530,19 +627,19 @@ async function saveScore() {
     });
     highlightedId = result.id;
     localStorage.setItem("discounterStrikePlayerName", name);
-    saveButton.textContent = "Gespeichert ✓";
-    restartButton.textContent = "Zum Startbildschirm";
+    saveButton.textContent = themeText("hallOfFame.saved","Gespeichert ✓");
+    restartButton.textContent = themeText("hallOfFame.back","Zum Startbildschirm");
     saveStatus.textContent = currentGameCheated
-      ? "Gespeichert. Schäm dich – dein Ergebnis steht nur in der Hall of Shame! 🤡"
-      : "Dein Ergebnis wurde erfolgreich gespeichert.";
+      ? themeText("hallOfFame.savedCheatedMessage","Gespeichert. Schäm dich – dein Ergebnis steht nur in der Hall of Shame! 🤡")
+      : themeText("hallOfFame.savedMessage","Dein Ergebnis wurde erfolgreich gespeichert.");
     nameInput.disabled = true;
     await loadScores();
   } catch (error) {
     console.error("Punktestand konnte nicht gespeichert werden:", error);
     saving = false;
     saveButton.disabled = false;
-    saveButton.textContent = currentGameCheated ? "Trotzdem erneut versuchen" : "Erneut versuchen";
-    saveStatus.textContent = "Speichern fehlgeschlagen. Prüfe die Firestore-Regeln und deine Internetverbindung.";
+    saveButton.textContent = currentGameCheated ? themeText("hallOfFame.retryCheated","Trotzdem erneut versuchen") : themeText("hallOfFame.retry","Erneut versuchen");
+    saveStatus.textContent = themeText("hallOfFame.saveFailed","Speichern fehlgeschlagen. Prüfe die Firestore-Regeln und deine Internetverbindung.");
   }
 }
 
@@ -569,6 +666,8 @@ loadScores();
 <script>
 (function(){
 "use strict";
+var themeText=window.themeText||function(path,fallback){return fallback;};
+var themeFormat=window.themeFormat||function(path,fallback){return fallback;};
 
 /*
   Robuster Zugriff auf die optionale balancing.js.
@@ -657,14 +756,14 @@ var VIEW_W=WORLD_W,VIEW_H=WORLD_H,CAMERA_SCALE=1,CAMERA_X=0,CAMERA_Y=0;
 var running=false,paused=false,betweenRounds=false,lastTime=0;
 var score=0,lives=balanceNumber("player.startLives",3),maxLives=balanceNumber("player.startLives",3);
 var game={mode:"story",dayIndex:0,hour:7,stage:1,isBoss:false};
-var weekDays=["Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag","Sonntag"];
+var weekDays=themeText("calendar.weekDays",["Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag","Sonntag"]);
 var bossSchedule={
-  9:{id:"giantCart",name:"Riesiger Einkaufswagen",emoji:"🛒",hp:18,speed:62,pts:1500,r:42},
-  12:{id:"supplier",name:"Lieferant",emoji:"🚚",hp:24,speed:66,pts:2200,r:44},
-  15:{id:"technician",name:"Servicetechniker",emoji:"🧰",hp:30,speed:70,pts:3000,r:43},
-  18:{id:"forklift",name:"Gabelstapler",emoji:"🚜",hp:36,speed:74,pts:4000,r:47},
-  21:{id:"toiletPyramid",name:"Pyramide aus Klopapier",emoji:"🧻",hp:44,speed:78,pts:5500,r:50},
-  23:{id:"cleaner",name:"Reinigungsmaschine",emoji:"🧼",hp:55,speed:82,pts:7500,r:52}
+  9:{id:"giantCart",spriteNumber:1,name:themeText("bosses.boss01","Riesiger Einkaufswagen"),emoji:"🛒",hp:18,speed:62,pts:1500,r:42},
+  12:{id:"supplier",spriteNumber:2,name:themeText("bosses.boss02","Lieferant"),emoji:"🚚",hp:24,speed:66,pts:2200,r:44},
+  15:{id:"technician",spriteNumber:3,name:themeText("bosses.boss03","Servicetechniker"),emoji:"🧰",hp:30,speed:70,pts:3000,r:43},
+  18:{id:"forklift",spriteNumber:4,name:themeText("bosses.boss04","Gabelstapler"),emoji:"🚜",hp:36,speed:74,pts:4000,r:47},
+  21:{id:"toiletPyramid",spriteNumber:5,name:themeText("bosses.boss05","Pyramide aus Klopapier"),emoji:"🧻",hp:44,speed:78,pts:5500,r:50},
+  23:{id:"cleaner",spriteNumber:6,name:themeText("bosses.boss06","Reinigungsmaschine"),emoji:"🧼",hp:55,speed:82,pts:7500,r:52}
 };
 Object.keys(bossSchedule).forEach(function(hour){
   var def=bossSchedule[hour];
@@ -711,12 +810,12 @@ var soundEnabled=true,audioCtx=null,bossMusicTimer=0,bossMusicStep=0;
           shoppers/senior_woman.png
           shoppers/worker.png
           shoppers/parent_child.png
-          bosses/giant_cart.png
-          bosses/supplier.png
-          bosses/technician.png
-          bosses/forklift.png
-          bosses/toilet_pyramid.png
-          bosses/cleaner.png
+          bosses/boss01.png
+          bosses/boss02.png
+          bosses/boss03.png
+          bosses/boss04.png
+          bosses/boss05.png
+          bosses/boss06.png
           weapons/mustard.png
           weapons/ketchup.png
           weapons/chili.png
@@ -729,10 +828,10 @@ var soundEnabled=true,audioCtx=null,bossMusicTimer=0,bossMusicStep=0;
           upgrades/fire.png
           upgrades/ram.png
           upgrades/puddle.png
-          projectiles/wrench.png
-          projectiles/package.png
-          projectiles/toilet_roll.png
-          projectiles/water.png
+          projectiles/projectile03.png
+          projectiles/projectile04.png
+          projectiles/projectile05.png
+          projectiles/projectile06.png
           scenery/
             shelves/
               shelf_01.png
@@ -753,7 +852,7 @@ var soundEnabled=true,audioCtx=null,bossMusicTimer=0,bossMusicStep=0;
   spielbar, auch wenn der Sprite-Ordner noch unvollständig ist.
 */
 var themeFromUrl=(new URLSearchParams(window.location.search).get("theme")||"").replace(/[^a-z0-9_-]/gi,"");
-var ACTIVE_THEME=themeFromUrl||localStorage.getItem("discounterStrikeTheme")||"discounter";
+var ACTIVE_THEME=window.ACTIVE_GAME_THEME||themeFromUrl||localStorage.getItem("discounterStrikeTheme")||"discounter";
 var SPRITE_BASE="sprites/"+ACTIVE_THEME+"/";
 if(logoSplashImage){
   logoSplashImage.src=SPRITE_BASE+"title.png";
@@ -778,12 +877,12 @@ var spritePaths={
   "shopper.seniorWoman":"shoppers/senior_woman.png",
   "shopper.worker":"shoppers/worker.png",
   "shopper.parentChild":"shoppers/parent_child.png",
-  "boss.giantCart":"bosses/giant_cart.png",
-  "boss.supplier":"bosses/supplier.png",
-  "boss.technician":"bosses/technician.png",
-  "boss.forklift":"bosses/forklift.png",
-  "boss.toiletPyramid":"bosses/toilet_pyramid.png",
-  "boss.cleaner":"bosses/cleaner.png",
+  "boss.01":"bosses/boss01.png",
+  "boss.02":"bosses/boss02.png",
+  "boss.03":"bosses/boss03.png",
+  "boss.04":"bosses/boss04.png",
+  "boss.05":"bosses/boss05.png",
+  "boss.06":"bosses/boss06.png",
   "weapon.mustard":"weapons/mustard.png",
   "weapon.ketchup":"weapons/ketchup.png",
   "weapon.chili":"weapons/chili.png",
@@ -797,10 +896,12 @@ var spritePaths={
   "upgrade.fire":"upgrades/fire.png",
   "upgrade.ram":"upgrades/ram.png",
   "upgrade.puddle":"upgrades/puddle.png",
-  "projectile.wrench":"projectiles/wrench.png",
-  "projectile.package":"projectiles/package.png",
-  "projectile.toiletRoll":"projectiles/toilet_roll.png",
-  "projectile.water":"projectiles/water.png"
+  "bossProjectile.01":"projectiles/projectile01.png",
+  "bossProjectile.02":"projectiles/projectile02.png",
+  "bossProjectile.03":"projectiles/projectile03.png",
+  "bossProjectile.04":"projectiles/projectile04.png",
+  "bossProjectile.05":"projectiles/projectile05.png",
+  "bossProjectile.06":"projectiles/projectile06.png"
 };
 
 var sprites={};
@@ -997,7 +1098,7 @@ function startBossMusic(){
   bossMusicTimer=window.setInterval(tick,280);
 }
 function updateSoundButton(){
-  soundBtn.textContent=soundEnabled?"🔊 Sound":"🔇 Stumm";
+  soundBtn.textContent=soundEnabled?themeText("hud.soundOn","🔊 Sound"):themeText("hud.soundOff","🔇 Stumm");
 }
 
 
@@ -1008,12 +1109,12 @@ var player={
 };
 
 var weaponInfo={
-  mustard:{name:"Senfstrahl",ammo:balanceNumber("weapons.mustard.ammo",20),cooldown:balanceNumber("weapons.mustard.cooldown",.24)},
-  chili:{name:"Chili-Bombe",ammo:balanceNumber("weapons.chili.ammo",7),cooldown:balanceNumber("weapons.chili.cooldown",.85)},
-  ketchup:{name:"Ketchup-Kanone",ammo:balanceNumber("weapons.ketchup.ammo",12),cooldown:balanceNumber("weapons.ketchup.cooldown",.52)},
-  pizza:{name:"Pizza-Wurf",ammo:balanceNumber("weapons.pizza.ammo",9),cooldown:balanceNumber("weapons.pizza.cooldown",.72)},
-  wave:{name:"Schallwelle",ammo:balanceNumber("weapons.wave.ammo",99),cooldown:balanceNumber("weapons.wave.cooldown",.55)},
-  watermelon:{name:"Wassermelone",ammo:balanceNumber("weapons.watermelon.ammo",1),cooldown:balanceNumber("weapons.watermelon.cooldown",1.15)}
+  mustard:{name:themeText("weapons.mustard","Senfstrahl"),ammo:balanceNumber("weapons.mustard.ammo",20),cooldown:balanceNumber("weapons.mustard.cooldown",.24)},
+  chili:{name:themeText("weapons.chili","Chili-Bombe"),ammo:balanceNumber("weapons.chili.ammo",7),cooldown:balanceNumber("weapons.chili.cooldown",.85)},
+  ketchup:{name:themeText("weapons.ketchup","Ketchup-Kanone"),ammo:balanceNumber("weapons.ketchup.ammo",12),cooldown:balanceNumber("weapons.ketchup.cooldown",.52)},
+  pizza:{name:themeText("weapons.pizza","Pizza-Wurf"),ammo:balanceNumber("weapons.pizza.ammo",9),cooldown:balanceNumber("weapons.pizza.cooldown",.72)},
+  wave:{name:themeText("weapons.wave","Schallwelle"),ammo:balanceNumber("weapons.wave.ammo",99),cooldown:balanceNumber("weapons.wave.cooldown",.55)},
+  watermelon:{name:themeText("weapons.watermelon","Wassermelone"),ammo:balanceNumber("weapons.watermelon.ammo",1),cooldown:balanceNumber("weapons.watermelon.cooldown",1.15)}
 };
 
 var shopperTypes=[
@@ -1028,12 +1129,12 @@ var shopperTypes=[
 ];
 
 var upgrades=[
-  {id:"speed",icon:"🛞",title:"Turbo-Räder",desc:"Grundgeschwindigkeit dauerhaft um 12 % erhöhen."},
-  {id:"life",icon:"❤️",title:"Verstärkter Wagen",desc:"Maximales Leben um 1 erhöhen und vollständig reparieren."},
-  {id:"ammo",icon:"🧺",title:"Größerer Korb",desc:"Jedes Waffen-Power-up liefert 30 % mehr Munition."},
-  {id:"fire",icon:"⚙️",title:"Schnellfeuer",desc:"Alle Waffen dauerhaft 15 % schneller abfeuern."},
-  {id:"ram",icon:"💪",title:"Stahlstoßstange",desc:"Die Stoßstange wird höher und vergrößert dauerhaft den Ramm-Trefferbereich."},
-  {id:"puddle",icon:"🛞",title:"Profilreifen",desc:"Pfützen bremsen den Einkaufswagen deutlich weniger."}
+  {id:"speed",icon:themeText("upgrades.speed.icon","🛞"),title:themeText("upgrades.speed.title","Turbo-Räder"),desc:themeText("upgrades.speed.description","Grundgeschwindigkeit dauerhaft um 12 % erhöhen.")},
+  {id:"life",icon:themeText("upgrades.life.icon","❤️"),title:themeText("upgrades.life.title","Verstärkter Wagen"),desc:themeText("upgrades.life.description","Maximales Leben um 1 erhöhen und vollständig reparieren.")},
+  {id:"ammo",icon:themeText("upgrades.ammo.icon","🧺"),title:themeText("upgrades.ammo.title","Größerer Korb"),desc:themeText("upgrades.ammo.description","Jedes Waffen-Power-up liefert 30 % mehr Munition.")},
+  {id:"fire",icon:themeText("upgrades.fire.icon","⚙️"),title:themeText("upgrades.fire.title","Schnellfeuer"),desc:themeText("upgrades.fire.description","Alle Waffen dauerhaft 15 % schneller abfeuern.")},
+  {id:"ram",icon:themeText("upgrades.ram.icon","💪"),title:themeText("upgrades.ram.title","Stahlstoßstange"),desc:themeText("upgrades.ram.description","Die Stoßstange wird höher und vergrößert dauerhaft den Ramm-Trefferbereich.")},
+  {id:"puddle",icon:themeText("upgrades.puddle.icon","🛞"),title:themeText("upgrades.puddle.title","Profilreifen"),desc:themeText("upgrades.puddle.description","Pfützen bremsen den Einkaufswagen deutlich weniger.")}
 ];
 
 function roundedRectPath(c,x,y,w,h,r){
@@ -1198,11 +1299,11 @@ function pushPlayerOutOfShelves(){
 function currentDayName(){
   var week=Math.floor(game.dayIndex/weekDays.length)+1;
   var name=weekDays[game.dayIndex%weekDays.length];
-  return week>1?name+" · Woche "+week:name;
+  return week>1?name+" · "+themeText("calendar.weekLabel","Woche")+" "+week:name;
 }
 
 function currentTimeLabel(){
-  return String(game.hour).padStart(2,"0")+":00 Uhr";
+  return String(game.hour).padStart(2,"0")+":00 "+themeText("calendar.hourSuffix","Uhr");
 }
 
 function bossForCurrentHour(){
@@ -1235,7 +1336,8 @@ function spawnBoss(def){
     damageCooldown:0,
     shootTimer:def.id==="technician"||def.id==="forklift"||def.id==="toiletPyramid"||def.id==="cleaner"?1.4:999,
     boss:true,
-    bossId:def.id
+    bossId:def.id,
+    spriteNumber:def.spriteNumber
   });
 }
 
@@ -1262,8 +1364,8 @@ function startBossBattle(def){
   updateHud();
   playSound("bossWarning");
   startBossMusic();
-  showRoundBanner("⚠ BOSS: "+def.name+" ⚠");
-  burst(W/2,H/2-70,"ENDGEGNER!","#b00020");
+  showRoundBanner(themeFormat("bosses.warning","⚠ BOSS: {name} ⚠",{name:def.name}));
+  burst(W/2,H/2-70,themeText("bosses.encounter","ENDGEGNER!"),"#b00020");
 }
 
 function finishStory(){
@@ -1272,8 +1374,8 @@ function finishStory(){
   running=false;
   paused=false;
   betweenRounds=true;
-  gameOverTitle.innerHTML="🏆 Montag <b>geschafft!</b>";
-  finalText.innerHTML="Du hast die <b>Reinigungsmaschine besiegt</b>, den Discounter bis 24:00 Uhr verteidigt und dabei <b>"+Math.floor(score).toLocaleString("de-DE")+" Punkte</b> erreicht.";
+  gameOverTitle.innerHTML=themeText("gameOver.storyTitleFirst","🏆 Montag")+" <b>"+themeText("gameOver.storyTitleSecond","geschafft!")+"</b>";
+  finalText.innerHTML=themeFormat("gameOver.storyText","Du hast die <b>Reinigungsmaschine besiegt</b>, den Discounter bis 24:00 Uhr verteidigt und dabei <b>{score} Punkte</b> erreicht.",{score:Math.floor(score).toLocaleString("de-DE")});
   gameOverScreen.classList.remove("hidden");
   if(typeof window.prepareHallOfFame==="function"){
     window.prepareHallOfFame(score,game.stage,roundCheated);
@@ -1456,7 +1558,7 @@ function updateHud(){
     }
     livesEl.innerHTML=heartHtml;
   }
-  weaponEl.textContent=player.weapon?weaponInfo[player.weapon].name:"keine";
+  weaponEl.textContent=player.weapon?weaponInfo[player.weapon].name:themeText("hud.noWeapon","keine");
   ammoEl.textContent=infiniteAmmoTimer>0?"∞ "+Math.ceil(infiniteAmmoTimer)+" s":player.ammo;
   speedEl.textContent=speedBoostTimer>0?speedBoostTimer.toFixed(1)+" s":"normal";
   cheatEl.textContent="Cheat an";
@@ -1496,7 +1598,7 @@ function returnToStartScreen(){
   startMenuIndex=0;
   updateStartMenuSelection();
   var restart=document.getElementById("restartBtn");
-  if(restart)restart.textContent="Nicht speichern · Zum Startbildschirm";
+  if(restart)restart.textContent="Nicht speichern";
   if(typeof window.resetHighscoreGameState==="function")window.resetHighscoreGameState();
   draw();
 }
@@ -1544,7 +1646,7 @@ function endGame(){
   stopBossMusic();
   bossHud.classList.add("hidden");
   running=false;paused=false;
-  gameOverTitle.innerHTML="Kasse <b>geschlossen</b>";
+  gameOverTitle.innerHTML="<b>geschlossen</b>";
   finalText.innerHTML="Du hast <b>"+Math.floor(score).toLocaleString("de-DE")+" Punkte</b> erreicht und bist bis <b>"+currentDayName()+", "+currentTimeLabel()+"</b> gekommen.";
   gameOverScreen.classList.remove("hidden");
   if(typeof window.prepareHallOfFame==="function"){window.prepareHallOfFame(score,game.stage,roundCheated);}
@@ -1612,10 +1714,33 @@ function fixedEnemySpawnY(round,index){
 
 function spawnEnemy(){
   var types=[
-    {id:"raider",emoji:"😈",name:"Rabatt-Räuber",pts:balanceNumber("enemies.raider.score",100),speed:balanceNumber("enemies.raider.speed",76),hp:balanceNumber("enemies.raider.hp",1)},
-    {id:"pirate",emoji:"🦹",name:"Pfand-Pirat",pts:balanceNumber("enemies.pirate.score",150),speed:balanceNumber("enemies.pirate.speed",91),hp:balanceNumber("enemies.pirate.hp",2)},
-    {id:"goblin",emoji:"👹",name:"Kassen-Kobold",pts:balanceNumber("enemies.goblin.score",210),speed:balanceNumber("enemies.goblin.speed",105),hp:balanceNumber("enemies.goblin.hp",3)}
+    {
+      id:"raider",
+      emoji:"😈",
+      name:themeText("enemies.raider.name","Rabatt-Räuber"),
+      pts:balanceNumber("enemies.raider.score",100),
+      speed:balanceNumber("enemies.raider.speed",76),
+      hp:balanceNumber("enemies.raider.hp",1)
+    },
+    {
+      id:"pirate",
+      emoji:"🦹",
+      name:themeText("enemies.pirate.name","Pfand-Pirat"),
+      pts:balanceNumber("enemies.pirate.score",150),
+      speed:balanceNumber("enemies.pirate.speed",91),
+      hp:balanceNumber("enemies.pirate.hp",2)
+    },
+    {
+      id:"goblin",
+      emoji:"👹",
+      name:themeText("enemies.goblin.name","Kassen-Kobold"),
+      pts:balanceNumber("enemies.goblin.score",210),
+      speed:balanceNumber("enemies.goblin.speed",105),
+      hp:balanceNumber("enemies.goblin.hp",3)
+    }
   ];
+  
+  
   var maxIndex=Math.min(types.length-1,Math.floor((game.stage-1)/2));
   var typeIndex=Math.floor(seededSpawnValue(game.stage,enemiesSpawned,5)*(maxIndex+1));
   var t=types[typeIndex];
@@ -2163,6 +2288,7 @@ function update(dt){
           r:e.bossId==="forklift"?18:14,
           life:5,
           emoji:projectileType,
+          spriteNumber:e.spriteNumber,
           puddle:e.bossId==="cleaner"
         });
         playSound("bossShot");
@@ -2670,7 +2796,7 @@ function draw(){
 
   for(i=0;i<bossProjectiles.length;i++){
     var bp=bossProjectiles[i];
-    var projectileKey=bp.emoji==="🔧"?"projectile.wrench":bp.emoji==="📦"?"projectile.package":bp.emoji==="🧻"?"projectile.toiletRoll":"projectile.water";
+    var projectileKey="bossProjectile."+String(bp.spriteNumber||1).padStart(2,"0");
     if(!drawSprite(projectileKey,bp.x,bp.y,bp.emoji==="📦"?38:31,bp.emoji==="📦"?38:31,bp.vx<0,0)){
       ctx.save();
       ctx.translate(bp.x,bp.y);
@@ -2702,7 +2828,7 @@ function draw(){
       ctx.fill();
     }
 
-    var entitySpriteKey=e.boss?("boss."+e.bossId):("enemy."+e.ai);
+    var entitySpriteKey=e.boss?("boss."+String(e.spriteNumber||1).padStart(2,"0")):("enemy."+e.ai);
     var entitySpriteSize=e.boss?Math.max(88,e.r*2.15):54;
     if(spriteReady(entitySpriteKey)){
       ctx.imageSmoothingEnabled=false;
@@ -2880,7 +3006,11 @@ window.addEventListener("keydown",function(e){
       ensureAudio();activateUpgradeMenuSelection();e.preventDefault();return;
     }
   }
-
+if(key==="Escape"&&paused&&!e.repeat){
+  e.preventDefault();
+  returnToStartScreen();
+  return;
+}
   if(lower==="p"&&!e.repeat){togglePause();e.preventDefault();return;}
   if((key===" "||key==="Spacebar")&&!e.repeat){
     if(running){
