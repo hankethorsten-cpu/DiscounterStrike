@@ -54,7 +54,7 @@ bosses/
     cleaner.png             128x128
 
 player/
-    cart.png                96x96
+    cart.png                96x96	x
 
 enemies/
     raider.png              64x64
@@ -86,3 +86,30 @@ shoppers/
     senior_woman.png        64x64
     worker.png              64x64
     parent_child.png        64x64
+
+scenery/
+	islands/
+	große Insel ->       128x128
+	kleine Insel ->	     128x96
+	jeweils island_01, 02 usw
+	shelves/
+	kleines Regal ->     64x192
+	großes Regal ->      64x224
+	    
+
+Objekt	Größe
+Regal	64 × 192 px
+Großes Regal	64 × 224 px
+Insel	128 × 96 px
+Große Insel	128 × 128 px
+
+
+✅ Player
+✅ Gegner
+✅ Waffen
+✅ Regale & Inseln
+✅ Shopper
+✅ Bosse
+✅ GUI & Upgrades
+✅ Projektil-Sprites
+✅ Titelbild
