@@ -4,12 +4,12 @@ Diese Datei nach dem Download in "theme.js" umbenennen.
 */
 
 window.GAME_THEME = {
-  id: "discounter",
+  id: "labor",
 
   game: {
-    title: "Discounter-Strike",
-    titleFirst: "Discounter",
-    titleSecond: "- Strike",
+    title: "Lab-Strike",
+    titleFirst: "Lab-Strike",
+    titleSecond: "",
     splashAlt: "Discounter Strike Titelbild",
     splashHint: "Beliebige Taste oder Klick",
     footerNotice: "Fiktives Arcade-Spiel ohne reale Marken oder Personen."
@@ -39,34 +39,83 @@ window.GAME_THEME = {
   },
 
   start: {
-    headingFirst: "Discounter",
-    headingSecond: "Strike",
-    intro: "Verteidige den Discounter von Montag, 07:00 Uhr bis zum Ladenschluss – oder spiele ohne Ende weiter.",
-    modeAria: "Spielmodus",
-    storyTitle: "📖 Storymodus",
-    storyText: "Montag von 07:00 bis 24:00 Uhr. Das Spiel endet nach der Reinigungsmaschine.",
-    endlessTitle: "♾️ Endlosmodus",
-    endlessText: "Nach Montag geht es mit Dienstag, Mittwoch und den folgenden Tagen weiter.",
-    startButton: "🎮 Spiel starten"
+  headingFirst: "Lab",
+  headingSecond: "Strike",
+
+  intro: "Verteidige dein Labor von 07:00 bis 24:00 Uhr – oder spiele ohne Ende weiter.",
+  
+controls:
+  "<b>Menü</b><br>" +
+  "Mit A/D oder ←/→ Spielart wählen · F oder Leertaste starten<br>" +
+  "<b>Spiel</b><br>" +
+  "Mit WASD oder Pfeiltasten deine Figur steuern und Gegner, aber kein Personal, rammen<br> F/Leertaste schießt nach oben · G schießt waagerecht in Blickrichtung <br> Pause mit P · Beenden über das Pausemenü mit ESC",
+
+
+
+  boxes: [
+    {
+      title: "🧪 Ziel",
+      text: "Führe dein Labor sicher durch den Arbeitstag und weiche Gefahren."
+    },
+    {
+      title: "⚗️ Ausrüstung",
+      text: "Nutze Reagenzgläser, Erlenmeyerkolben, Desinfektion und weiteres als Waffen."
+    },
+    {
+      title: "🦠 Gegner",
+      text: "Bekämpfe Legionellen, Pseudomonas und Andere mit der richtigen Ausrüstung."
+    },
+    {
+      title: "⬆️ Upgrades",
+      text: "Verbessere nach jeder Runde dauerhaft deine Laborausrüstung und deine Fähigkeiten."
+    }
+  ],
+
+  modeAria: "Spielmodus",
+  storyTitle: "📖 Storymodus",
+  storyText: "Montag von 07:00 Uhr bis 24:00 Uhr. Das Spiel endet nach dem DAkkS-Audit.",
+  endlessTitle: "♾️ Endlosmodus",
+  endlessText: "Nach Montag geht es mit Dienstag, Mittwoch usw. weiter. ",
+  startButton: "🎮 Spiel starten"
+},
+
+pause: {
+  titleFirst: "Spiel",
+  titleSecond: "pausiert",
+text: "Drücke <b>P</b> zum Fortsetzen.<br>Drücke <b>ESC</b> zum Beenden und um zum Hauptmenü zurückzukehren<br><br>Es gibt einen Cheat-Code ... errätst du ihn?iddqd"
+},
+
+enemies: {
+  raider: {
+    name: "Legionella"
   },
 
+  pirate: {
+    name: "Pseudomonas"
+  },
+
+  goblin: {
+    name: "Superkeim"
+  }
+},
+
   bosses: {
-    boss01: "Riesiger Einkaufswagennnn",
-    boss02: "Lieferant",
-    boss03: "Servicetechniker",
-    boss04: "Gabelstapler",
-    boss05: "Pyramide aus Klopapier",
-    boss06: "Reinigungsmaschine",
+    boss01: "Wütender Kunde",
+    boss02: "Rechnungen",
+    boss03: "VKA-Proben",
+    boss04: "Probenberg",
+    boss05: "Sonderwünsche",
+    boss06: "DAkkS Prüfung",
     warning: "⚠ BOSS: {name} ⚠",
     encounter: "ENDGEGNER!"
   },
 
   weapons: {
-    mustard: "Senfstrahl",
-    ketchup: "Ketchup-Kanone",
-    chili: "Chili-Bombe",
-    pizza: "Pizza-Wurf",
-    wave: "Schallwelle",
-    watermelon: "Wassermelone"
+    mustard: "Desinfektionsmittel",
+    ketchup: "Neutralisationsmittel",
+    chili: "Biozid-Bombe",
+    pizza: "Petrischalen-Splitter",
+    wave: "UV-Strahlung",
+    watermelon: "Biozid-Kanister"
   }
 };
