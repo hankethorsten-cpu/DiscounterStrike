@@ -3157,7 +3157,7 @@ function chooseTouchFireMode(clientX,clientY){
   var dx=clientX-pos.x,dy=clientY-pos.y;
   /* Nach unten wird bewusst nicht geschossen. Oberhalb der Figur gewinnt
      "oben"; ansonsten entscheidet links/rechts. */
-  if(dy<0&&Math.abs(dy)>Math.abs(dx)*.30)return "up";
+  if(dy<0&&Math.abs(dy)>Math.abs(dx)*.20)return "up";
   return dx<0?"left":"right";
 }
 
