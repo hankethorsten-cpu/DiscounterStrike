@@ -103,7 +103,7 @@ button:active{transform:translateY(4px);box-shadow:0 2px 0 #a98918}
 .hof-row:nth-child(1){border:1px solid #d2a928}
 .hof-row:nth-child(2){border:1px solid #9ea7b0}
 .hof-row:nth-child(3){border:1px solid #a56f3d}
-.hof-rank{font-weight:900;text-align:center}.hof-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:750}.hof-score{font-variant-numeric:tabular-nums;font-weight:900;color:#fff}
+.hof-rank{font-weight:900;text-align:center}.hof-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:750}.cheat-note{font-weight:400}.hof-score{font-variant-numeric:tabular-nums;font-weight:900;color:#fff}
 .hof-row.new-score{animation:hofFlash 1s ease-in-out 3;background:#514517}
 @keyframes hofFlash{50%{background:#8b751d;transform:scale(1.015)}}
 .score-entry{max-width:480px;margin:16px auto 10px;padding:15px;border-radius:15px;background:#121923;border:1px solid #465364}
@@ -255,7 +255,7 @@ button:active{transform:translateY(4px);box-shadow:0 2px 0 #a98918}
           <button id="startBtn" type="button" style="min-width:220px">🎮 Spiel starten</button>
         </div>
 
-        <div class="start-controls" id="startControls"><b>Menü</b><br>Mit A/D oder ←/→ Spielart wählen · F oder Leertaste starten<br><b>Spiel</b><br>Mit WASD oder Pfeiltasten deine Figur steuern · F/Leertaste schießt nach oben · G schießt waagerecht in Blickrichtung · Pause mit P · Beenden über das Pausemenü mit ESC</div>
+        <div class="start-controls" id="startControls"><b>Menü</b><br>Mit A/D oder ←/→ Spielart wählen · F oder Leertaste starten<br><b>Spiel</b><br>Mit WASD oder Pfeiltasten deine Figur steuern und Gegner rammen (aber kein Personal/Gäste)· F/Leertaste schießt nach oben · G schießt waagerecht in Blickrichtung · Pause mit P · Beenden über das Pausemenü mit ESC</div>
 
         <div class="hof-panel hof-fame-panel">
           <h3 class="hof-title" id="startHallOfFameTitle">🏆 Hall of Fame</h3>
@@ -506,7 +506,10 @@ function renderHallOfFame(target, showCheated) {
     return '<div class="hof-row' + isNew + '">' +
       '<span class="hof-rank">' + rankSymbol(index + 1, showCheated) + '</span>' +
       '<span class="hof-name" title="' + escapeText(entry.name) + '">' +
-      (showCheated ? "🤡 " : "") + escapeText(entry.name) + '</span>' +
+(showCheated ? "💀 " : "") +
+escapeText(entry.name) +
+(showCheated ? ' <span class="cheat-note">hat gecheatet</span>' : "") +
+'</span>' +
       '<span class="hof-score">' + formatScore(entry.score) + '</span>' +
       '</div>';
   }).join("");
