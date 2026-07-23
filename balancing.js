@@ -30,8 +30,8 @@ window.GAME_BALANCE = {
   player: {
     startLives: 3,
     maxDisplayedLives: 6,
-    baseSpeed: 235,
-    invulnerabilitySeconds: 1.4
+    baseSpeed: 260,
+    invulnerabilitySeconds: 1.8
   },
 
   rounds: {
@@ -64,6 +64,37 @@ window.GAME_BALANCE = {
       maxOnMap: 1,
       movementSpeed: 74
     },
+	
+	ammo: {
+      enabled: true,
+      enabledDuringBoss: true,
+      checkIntervalSeconds: 2.5,
+      chancePercent: 6,
+      maxOnMap: 1,
+      movementSpeed: 72,
+      radius: 22
+    },
+
+    life: {
+      enabled: true,
+      enabledDuringBoss: false,
+      checkIntervalSeconds: 5.0,
+      chancePercent: 2,
+      maxOnMap: 1,
+      movementSpeed: 68,
+      radius: 22
+    },
+
+    fire: {
+      enabled: true,
+      enabledDuringBoss: true,
+      checkIntervalSeconds: 2.5,
+      chancePercent: 6,
+      maxOnMap: 1,
+      movementSpeed: 72,
+      radius: 22
+    },
+	
 
     shopper: {
       enabled: true,
@@ -131,6 +162,24 @@ window.GAME_BALANCE = {
     guaranteedWeaponAfterSeconds: 10,
     guaranteedWeaponBossSeconds: 2,
     guaranteedWeaponNormalSeconds: 9,
-    speedBoostFactor: 1.55
+    speedBoostFactor: 1.55,
+
+    speed: {
+      durationSeconds: 10
+    },
+
+    ammo: {
+      durationSeconds: 10
+    },
+
+    life: {
+      additionalLives: 1
+    },
+
+    fire: {
+      durationSeconds: 10,
+      projectileCount: 3,
+      spreadPixels: 28
+    }
   }
 };

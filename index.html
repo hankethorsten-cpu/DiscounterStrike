@@ -255,7 +255,7 @@ button:active{transform:translateY(4px);box-shadow:0 2px 0 #a98918}
           <button id="startBtn" type="button" style="min-width:220px">🎮 Spiel starten</button>
         </div>
 
-        <div class="start-controls" id="startControls"><b>Menü</b><br>Mit A/D oder ←/→ Spielart wählen · F oder Leertaste starten<br><b>Spiel</b><br>Mit WASD oder Pfeiltasten deine Figur steuern und Gegner rammen (aber kein Personal/Gäste)· F/Leertaste schießt nach oben · G schießt waagerecht in Blickrichtung · Pause mit P · Beenden über das Pausemenü mit ESC</div>
+        <div class="start-controls" id="startControls"><b>Menü</b><br>Mit A/D oder ←/→ Spielart wählen · F oder Leertaste starten<br><b>Spiel</b><br>Mit WASD oder Pfeiltasten deine Figur steuern · F/Leertaste schießt nach oben · G schießt waagerecht in Blickrichtung · Pause mit P · Beenden über das Pausemenü mit ESC</div>
 
         <div class="hof-panel hof-fame-panel">
           <h3 class="hof-title" id="startHallOfFameTitle">🏆 Hall of Fame</h3>
@@ -389,6 +389,10 @@ button:active{transform:translateY(4px);box-shadow:0 2px 0 #a98918}
     setText("endlessModeText","start.endlessText","");
     setText("startBtn","start.startButton","🎮 Spiel starten");
     setHtml("startControls","start.controls","");
+    var controls=document.getElementById("startControls");
+    if(controls&&controls.innerHTML.indexOf("Controller:")===-1){
+      controls.innerHTML+='<br><b>Controller:</b> Stick/Steuerkreuz bewegen · B/Kreis schießt nach oben · A/Kreuz schießt waagerecht · Start pausiert · Select/Zurück beendet im Pausemenü';
+    }
     setText("startHallOfFameTitle","hallOfFame.title","🏆 Hall of Fame");
     setText("startHallOfShameTitle","hallOfFame.shameTitle","💀 Hall of Shame");
     var pauseHeading=document.getElementById("pauseHeading");
@@ -506,10 +510,8 @@ function renderHallOfFame(target, showCheated) {
     return '<div class="hof-row' + isNew + '">' +
       '<span class="hof-rank">' + rankSymbol(index + 1, showCheated) + '</span>' +
       '<span class="hof-name" title="' + escapeText(entry.name) + '">' +
-(showCheated ? "💀 " : "") +
-escapeText(entry.name) +
-(showCheated ? ' <span class="cheat-note">hat gecheatet</span>' : "") +
-'</span>' +
+      (showCheated ? "🤡 " : "") + escapeText(entry.name) +
+      (showCheated ? ' <span class="cheat-note">hat gecheatet</span>' : "") + '</span>' +
       '<span class="hof-score">' + formatScore(entry.score) + '</span>' +
       '</div>';
   }).join("");
@@ -782,8 +784,8 @@ Object.keys(bossSchedule).forEach(function(hour){
 });
 var enemiesToSpawn=12,enemiesSpawned=0,enemiesDefeated=0;
 var enemyTimer=.8,roundEndTimer=0,stageClearStarted=false,stageClearTimeout=0;
-var speedBoostTimer=0,guaranteedWeaponTimer=5;
-var dropTimers={weapon:0,speedBoost:0,shopper:0,puddle:0};
+var speedBoostTimer=0,firePowerupTimer=0,guaranteedWeaponTimer=5;
+var dropTimers={weapon:0,speedBoost:0,ammo:0,life:0,fire:0,shopper:0,puddle:0};
 var godMode=false,cheatBuffer="",hallCheatBuffer="",roundCheated=false;
 var ammoMultiplier=1,fireRateMultiplier=1,puddleResistance=1;
 var upgradeLevels={speed:0,life:0,ammo:0,fire:0,ram:0,puddle:0};
@@ -791,6 +793,13 @@ var enemies=[],shoppers=[],puddles=[],powerups=[],projectiles=[],bossProjectiles
 var infiniteAmmoTimer=0;
 var portalCooldown=0;
 var keys={};
+
+/* Controller / Gamepad API */
+var activeGamepadIndex=null;
+var previousGamepadButtons=[];
+var gamepadMoveX=0,gamepadMoveY=0;
+var gamepadMenuCooldown=0;
+var gamepadLastTime=performance.now();
 
 var soundEnabled=true,audioCtx=null,bossMusicTimer=0,bossMusicStep=0;
 
@@ -836,6 +845,10 @@ var soundEnabled=true,audioCtx=null,bossMusicTimer=0,bossMusicStep=0;
           upgrades/fire.png
           upgrades/ram.png
           upgrades/puddle.png
+          powerups/speed.png
+          powerups/ammo.png
+          powerups/life.png
+          powerups/fire.png
           projectiles/projectile03.png
           projectiles/projectile04.png
           projectiles/projectile05.png
@@ -899,6 +912,9 @@ var spritePaths={
   "weapon.wave":"weapons/wave.png",
   "weapon.watermelon":"weapons/watermelon.png",
   "powerup.speed":"powerups/speed.png",
+  "powerup.ammo":"powerups/ammo.png",
+  "powerup.life":"powerups/life.png",
+  "powerup.fire":"powerups/fire.png",
   "upgrade.speed":"upgrades/speed.png",
   "upgrade.life":"upgrades/life.png",
   "upgrade.ammo":"upgrades/ammo.png",
@@ -1532,6 +1548,7 @@ function resetGame(mode){
   godMode=false;cheatBuffer="";hallCheatBuffer="";roundCheated=false;
   ammoMultiplier=1;fireRateMultiplier=1;puddleResistance=1;
   upgradeLevels={speed:0,life:0,ammo:0,fire:0,ram:0,puddle:0};
+  infiniteAmmoTimer=0;firePowerupTimer=0;speedBoostTimer=0;
   player.baseSpeed=305;player.weapon=null;player.ammo=0;
   resetWorldForRound();
 }
@@ -1539,7 +1556,6 @@ function resetGame(mode){
 function resetWorldForRound(){
   enemies=[];shoppers=[];puddles=[];powerups=[];projectiles=[];bossProjectiles=[];chiliBombs=[];watermelons=[];splats=[];particles=[];
   buildShelves();
-  infiniteAmmoTimer=0;
   var rawEnemyCount=
     balanceNumber("rounds.baseEnemyCount",6)+
     Math.min(balanceNumber("rounds.maximumHourBonus",8),Math.floor((game.hour-7)/2)*balanceNumber("rounds.additionalEnemiesPerTwoHours",1))+
@@ -1567,7 +1583,9 @@ function updateHud(){
     }
     livesEl.innerHTML=heartHtml;
   }
-  weaponEl.textContent=player.weapon?weaponInfo[player.weapon].name:themeText("hud.noWeapon","keine");
+  var weaponLabel=player.weapon?weaponInfo[player.weapon].name:themeText("hud.noWeapon","keine");
+  if(firePowerupTimer>0)weaponLabel+=" · "+themeText("powerups.fire.hudSuffix","×3");
+  weaponEl.textContent=weaponLabel;
   ammoEl.textContent=infiniteAmmoTimer>0?"∞ "+Math.ceil(infiniteAmmoTimer)+" s":player.ammo;
   speedEl.textContent=speedBoostTimer>0?speedBoostTimer.toFixed(1)+" s":"normal";
   cheatEl.textContent="Cheat an";
@@ -1792,17 +1810,30 @@ function safePowerupY(){
   return W/2;
 }
 
+var weaponDropTypes=["watermelon","mustard","ketchup","chili","pizza","wave"];
+
+function isWeaponPowerupType(type){
+  return weaponDropTypes.indexOf(type)!==-1;
+}
+
+function countPowerupsOfType(type){
+  var count=0;
+  for(var i=0;i<powerups.length;i++){
+    if(powerups[i].type===type)count++;
+  }
+  return count;
+}
+
 function countWeaponDrops(){
   var count=0;
   for(var i=0;i<powerups.length;i++){
-    if(powerups[i].type!=="speed")count++;
+    if(isWeaponPowerupType(powerups[i].type))count++;
   }
   return count;
 }
 
 function spawnWeaponDrop(){
-  var types=["watermelon","infinite","mustard","ketchup","chili","pizza","wave"];
-  var type=weightedChoice(types,function(id){return balanceNumber("weapons."+id+".dropRate",0);});
+  var type=weightedChoice(weaponDropTypes,function(id){return balanceNumber("weapons."+id+".dropRate",0);});
   if(!type)return;
   powerups.push({
     x:safePowerupY(),
@@ -1814,16 +1845,22 @@ function spawnWeaponDrop(){
   });
 }
 
-function spawnSpeedBoostDrop(){
+function spawnFieldPowerupDrop(type,configId){
+  configId=configId||type;
   powerups.push({
     x:safePowerupY(),
     y:-35,
-    r:22,
+    r:Math.max(12,balanceNumber("drops."+configId+".radius",22)),
     vx:0,
-    vy:balanceNumber("drops.speedBoost.movementSpeed",74),
-    type:"speed"
+    vy:balanceNumber("drops."+configId+".movementSpeed",72),
+    type:type
   });
 }
+
+function spawnSpeedBoostDrop(){spawnFieldPowerupDrop("speed","speedBoost");}
+function spawnAmmoDrop(){spawnFieldPowerupDrop("ammo");}
+function spawnLifeDrop(){spawnFieldPowerupDrop("life");}
+function spawnFireDrop(){spawnFieldPowerupDrop("fire");}
 
 function spawnShopperDrop(){
   var shopperDef=shopperTypes[Math.floor(Math.random()*shopperTypes.length)];
@@ -1858,6 +1895,9 @@ function spawnPuddleDrop(){
 function resetDropTimers(){
   dropTimers.weapon=balanceNumber("drops.weapon.checkIntervalSeconds",2.0);
   dropTimers.speedBoost=balanceNumber("drops.speedBoost.checkIntervalSeconds",2.0);
+  dropTimers.ammo=balanceNumber("drops.ammo.checkIntervalSeconds",2.0);
+  dropTimers.life=balanceNumber("drops.life.checkIntervalSeconds",4.0);
+  dropTimers.fire=balanceNumber("drops.fire.checkIntervalSeconds",2.5);
   dropTimers.shopper=balanceNumber("drops.shopper.checkIntervalSeconds",2.0);
   dropTimers.puddle=balanceNumber("drops.puddle.checkIntervalSeconds",2.0);
 }
@@ -1865,9 +1905,10 @@ function resetDropTimers(){
 function processIndependentDrops(dt){
   var definitions=[
     {id:"weapon",arrayCount:countWeaponDrops,spawn:spawnWeaponDrop},
-    {id:"speedBoost",arrayCount:function(){
-      var count=0;for(var i=0;i<powerups.length;i++)if(powerups[i].type==="speed")count++;return count;
-    },spawn:spawnSpeedBoostDrop},
+    {id:"speedBoost",arrayCount:function(){return countPowerupsOfType("speed");},spawn:spawnSpeedBoostDrop},
+    {id:"ammo",arrayCount:function(){return countPowerupsOfType("ammo");},spawn:spawnAmmoDrop},
+    {id:"life",arrayCount:function(){return countPowerupsOfType("life");},spawn:spawnLifeDrop},
+    {id:"fire",arrayCount:function(){return countPowerupsOfType("fire");},spawn:spawnFireDrop},
     {id:"shopper",arrayCount:function(){return shoppers.length;},spawn:spawnShopperDrop},
     {id:"puddle",arrayCount:function(){return puddles.length;},spawn:spawnPuddleDrop}
   ];
@@ -1890,12 +1931,37 @@ function processIndependentDrops(dt){
   }
 }
 
+function applyFieldPowerup(type,u){
+  var burstX=u&&typeof u.x==="number"?u.x:player.x+player.w/2;
+  var burstY=u&&typeof u.y==="number"?u.y:player.y;
+
+  if(type==="ammo"){
+    var ammoSeconds=Math.max(1,balanceNumber("powerups.ammo.durationSeconds",10));
+    infiniteAmmoTimer+=ammoSeconds;
+    burst(burstX,burstY,themeFormat("powerups.ammo.pickup","∞ MUNITION: {seconds} SEK.",{seconds:Math.round(ammoSeconds)}));
+    playSound("infinite");
+  }else if(type==="life"){
+    var addedLives=Math.max(1,Math.round(balanceNumber("powerups.life.additionalLives",1)));
+    lives+=addedLives;
+    burst(burstX,burstY,themeFormat("powerups.life.pickup","+{lives} LEBEN",{lives:addedLives}));
+    playSound("pickup");
+  }else if(type==="fire"){
+    var fireSeconds=Math.max(1,balanceNumber("powerups.fire.durationSeconds",10));
+    firePowerupTimer+=fireSeconds;
+    burst(burstX,burstY,themeFormat("powerups.fire.pickup","DREIFACHSCHUSS: {seconds} SEK.",{seconds:Math.round(fireSeconds)}));
+    playSound("pickup");
+  }else if(type==="speed"){
+    var speedSeconds=Math.max(1,balanceNumber("powerups.speed.durationSeconds",10));
+    speedBoostTimer+=speedSeconds;
+    burst(burstX,burstY,themeFormat("powerups.speed.pickup","TEMPO +{seconds} SEK.",{seconds:Math.round(speedSeconds)}));
+    playSound("pickup");
+  }
+  updateHud();
+}
+
 function equipWeapon(type){
   if(type==="infinite"){
-    infiniteAmmoTimer=balanceNumber("weapons.infinite.durationSeconds",10);
-    burst(player.x+player.w/2,player.y,Math.round(infiniteAmmoTimer)+" SEK. ∞ MUNITION!");
-    playSound("infinite");
-    updateHud();
+    applyFieldPowerup("ammo");
     return;
   }
   player.weapon=type;
@@ -1904,6 +1970,18 @@ function equipWeapon(type){
   burst(player.x+player.w/2,player.y,weaponInfo[type].name+"!");
   playSound("pickup");
   updateHud();
+}
+
+function buildShotOrigins(sx,sy,aimX,aimY){
+  var count=firePowerupTimer>0?Math.max(1,Math.round(balanceNumber("powerups.fire.projectileCount",3))):1;
+  var spacing=Math.max(0,balanceNumber("powerups.fire.spreadPixels",28));
+  var normalX=-aimY,normalY=aimX;
+  var origins=[];
+  for(var i=0;i<count;i++){
+    var lane=(i-(count-1)/2)*spacing;
+    origins.push({x:sx+normalX*lane,y:sy+normalY*lane});
+  }
+  return origins;
 }
 
 function shoot(mode){
@@ -1924,41 +2002,55 @@ function shoot(mode){
 
   var sx=player.x+player.w/2+aimX*16;
   var sy=player.y+player.h/2+aimY*16;
+  var origins=buildShotOrigins(sx,sy,aimX,aimY);
 
   if(type==="mustard"){
     var mustardSpeed=balanceNumber("weapons.mustard.projectileSpeed",820);
-    projectiles.push({
-      type:"mustard",x:sx,y:sy,
-      vx:aimX*mustardSpeed,vy:aimY*mustardSpeed,
-      life:1.65,r:8,length:70,
-      damage:balanceNumber("weapons.mustard.damage",1)
-    });
+    for(var mi=0;mi<origins.length;mi++){
+      projectiles.push({
+        type:"mustard",x:origins[mi].x,y:origins[mi].y,
+        vx:aimX*mustardSpeed,vy:aimY*mustardSpeed,
+        life:1.65,r:8,length:70,
+        damage:balanceNumber("weapons.mustard.damage",1)
+      });
+    }
   }else if(type==="ketchup"){
     var ketchupSpeed=balanceNumber("weapons.ketchup.projectileSpeed",540);
-    projectiles.push({type:"ketchup",x:sx,y:sy,vx:aimX*ketchupSpeed,vy:aimY*ketchupSpeed,life:2.35,r:12,damage:balanceNumber("weapons.ketchup.damage",2)});
+    for(var ki=0;ki<origins.length;ki++){
+      projectiles.push({type:"ketchup",x:origins[ki].x,y:origins[ki].y,vx:aimX*ketchupSpeed,vy:aimY*ketchupSpeed,life:2.35,r:12,damage:balanceNumber("weapons.ketchup.damage",2)});
+    }
   }else if(type==="chili"){
     var chiliSpeed=balanceNumber("weapons.chili.projectileSpeed",330);
-    chiliBombs.push({x:sx,y:sy,startY:sy,vx:aimX*chiliSpeed,vy:aimY*chiliSpeed,gravity:0,life:.68,fuse:.38,state:"flying",r:11,rotation:0});
+    for(var ci=0;ci<origins.length;ci++){
+      chiliBombs.push({x:origins[ci].x,y:origins[ci].y,startY:origins[ci].y,vx:aimX*chiliSpeed,vy:aimY*chiliSpeed,gravity:0,life:.68,fuse:.38,state:"flying",r:11,rotation:0});
+    }
   }else if(type==="pizza"){
     var pizzaSpeed=balanceNumber("weapons.pizza.projectileSpeed",480);
-    if(mode==="look"){
-      projectiles.push({type:"pizza",x:sx,y:sy,vx:aimX*pizzaSpeed,vy:aimY*pizzaSpeed,life:2.35,r:24,damage:balanceNumber("weapons.pizza.damage",2),rotation:Math.atan2(aimY,aimX)});
-    }else{
-      projectiles.push({type:"pizza",x:sx,y:sy,vx:pizzaSpeed,vy:0,life:2.35,r:24,damage:balanceNumber("weapons.pizza.damage",2),rotation:0});
-      projectiles.push({type:"pizza",x:sx,y:sy,vx:-pizzaSpeed,vy:0,life:2.35,r:24,damage:balanceNumber("weapons.pizza.damage",2),rotation:Math.PI});
-      projectiles.push({type:"pizza",x:sx,y:sy,vx:0,vy:-pizzaSpeed,life:2.35,r:24,damage:balanceNumber("weapons.pizza.damage",2),rotation:-Math.PI/2});
-      projectiles.push({type:"pizza",x:sx,y:sy,vx:0,vy:pizzaSpeed,life:2.35,r:24,damage:balanceNumber("weapons.pizza.damage",2),rotation:Math.PI/2});
+    for(var pi=0;pi<origins.length;pi++){
+      var pizzaOrigin=origins[pi];
+      if(mode==="look"){
+        projectiles.push({type:"pizza",x:pizzaOrigin.x,y:pizzaOrigin.y,vx:aimX*pizzaSpeed,vy:aimY*pizzaSpeed,life:2.35,r:24,damage:balanceNumber("weapons.pizza.damage",2),rotation:Math.atan2(aimY,aimX)});
+      }else{
+        projectiles.push({type:"pizza",x:pizzaOrigin.x,y:pizzaOrigin.y,vx:pizzaSpeed,vy:0,life:2.35,r:24,damage:balanceNumber("weapons.pizza.damage",2),rotation:0});
+        projectiles.push({type:"pizza",x:pizzaOrigin.x,y:pizzaOrigin.y,vx:-pizzaSpeed,vy:0,life:2.35,r:24,damage:balanceNumber("weapons.pizza.damage",2),rotation:Math.PI});
+        projectiles.push({type:"pizza",x:pizzaOrigin.x,y:pizzaOrigin.y,vx:0,vy:-pizzaSpeed,life:2.35,r:24,damage:balanceNumber("weapons.pizza.damage",2),rotation:-Math.PI/2});
+        projectiles.push({type:"pizza",x:pizzaOrigin.x,y:pizzaOrigin.y,vx:0,vy:pizzaSpeed,life:2.35,r:24,damage:balanceNumber("weapons.pizza.damage",2),rotation:Math.PI/2});
+      }
     }
   }else if(type==="wave"){
     var waveSpeed=balanceNumber("weapons.wave.projectileSpeed",450);
-    projectiles.push({type:"wave",x:sx,y:sy,vx:aimX*waveSpeed,vy:aimY*waveSpeed,life:2.0,r:20,damage:balanceNumber("weapons.wave.damage",2),growth:balanceNumber("weapons.wave.growth",180)});
+    for(var wi=0;wi<origins.length;wi++){
+      projectiles.push({type:"wave",x:origins[wi].x,y:origins[wi].y,vx:aimX*waveSpeed,vy:aimY*waveSpeed,life:2.0,r:20,damage:balanceNumber("weapons.wave.damage",2),growth:balanceNumber("weapons.wave.growth",180)});
+    }
   }else if(type==="watermelon"){
     var melonSpeed=balanceNumber("weapons.watermelon.projectileSpeed",330);
     /* Beim Schuss nach oben detoniert das Projektil ungefähr in der Mitte
        des Spielfelds. Wird oberhalb der Mitte abgefeuert, fliegt es trotzdem
        noch ein kurzes, gut sichtbares Stück weiter. */
-    var melonTargetY=aimY<0?Math.min(H*.4,sy-120):null;
-    watermelons.push({x:sx,y:sy,vx:aimX*melonSpeed,vy:aimY*melonSpeed,gravity:0,r:25,life:2.15,age:0,rotation:0,targetY:melonTargetY});
+    for(var wmi=0;wmi<origins.length;wmi++){
+      var melonTargetY=aimY<0?Math.min(H*.4,origins[wmi].y-120):null;
+      watermelons.push({x:origins[wmi].x,y:origins[wmi].y,vx:aimX*melonSpeed,vy:aimY*melonSpeed,gravity:0,r:25,life:2.15,age:0,rotation:0,targetY:melonTargetY});
+    }
   }
 
   if(infiniteAmmoTimer<=0&&player.ammo<=0)player.weapon=null;
@@ -2063,7 +2155,7 @@ function beginUpgradeSelection(){
 function applyUpgrade(id){
   upgradeLevels[id]=(upgradeLevels[id]||0)+1;
   if(id==="speed"){player.baseSpeed*=balanceNumber("upgrades.speed.factor",1.12);}
-  else if(id==="life"){maxLives+=Math.max(1,Math.round(balanceNumber("upgrades.life.additionalLives",1)));lives=maxLives;}
+  else if(id==="life"){maxLives+=Math.max(1,Math.round(balanceNumber("upgrades.life.additionalLives",1)));lives=Math.max(lives,maxLives);}
   else if(id==="ammo"){ammoMultiplier*=balanceNumber("upgrades.ammo.factor",1.30);}
   else if(id==="fire"){fireRateMultiplier*=balanceNumber("upgrades.fire.factor",.85);}
   else if(id==="ram"){/* Trefferbereich wächst über upgradeLevels.ram. */}
@@ -2130,6 +2222,7 @@ function steerEnemyAroundObstacles(e,dt){
 function update(dt){
   if(infiniteAmmoTimer>0)infiniteAmmoTimer=Math.max(0,infiniteAmmoTimer-dt);
   speedBoostTimer=Math.max(0,speedBoostTimer-dt);
+  firePowerupTimer=Math.max(0,firePowerupTimer-dt);
   guaranteedWeaponTimer-=dt;
   player.inv=Math.max(0,player.inv-dt);
   player.shootCooldown=Math.max(0,player.shootCooldown-dt);
@@ -2138,7 +2231,7 @@ function update(dt){
   if(guaranteedWeaponTimer<=0&&!player.weapon){
     var hasWeapon=false;
     for(var pp=0;pp<powerups.length;pp++){
-      if(powerups[pp].type==="mustard"||powerups[pp].type==="ketchup"||powerups[pp].type==="chili"||powerups[pp].type==="pizza"){hasWeapon=true;break;}
+      if(isWeaponPowerupType(powerups[pp].type)){hasWeapon=true;break;}
     }
     if(!hasWeapon){
       if(game.isBoss)spawnBossWeapon();
@@ -2149,7 +2242,7 @@ function update(dt){
 
   processIndependentDrops(dt);
 
-  var dx=0,dy=0;
+  var dx=gamepadMoveX,dy=gamepadMoveY;
   if(keys.ArrowRight||keys.d){dx++}if(keys.ArrowLeft||keys.a){dx--}
   if(keys.ArrowDown||keys.s){dy++}if(keys.ArrowUp||keys.w){dy--}
   if(dx||dy){
@@ -2395,9 +2488,8 @@ function update(dt){
     var u=powerups[i];
     if(!u.hit&&rectCircle(player.x,player.y,player.w,player.h,u.x,u.y,u.r)){
       u.hit=true;
-      if(u.type==="speed"){speedBoostTimer=10;burst(u.x,u.y,"TEMPO +10 SEK.");}
+      if(u.type==="speed"||u.type==="ammo"||u.type==="life"||u.type==="fire")applyFieldPowerup(u.type,u);
       else equipWeapon(u.type);
-      updateHud();
     }
   }
 
@@ -2497,9 +2589,9 @@ function update(dt){
     }
     return x.x>-100&&x.x<W+140;
   });
-  shoppers=shoppers.filter(function(x){return x.x>-75&&x.x<W+90;});
-  puddles=puddles.filter(function(x){return x.x>-75;});
-  powerups=powerups.filter(function(x){return !x.hit&&x.x>-75;});
+  shoppers=shoppers.filter(function(x){return x.y<H+90&&x.x>-90&&x.x<W+90;});
+  puddles=puddles.filter(function(x){return x.y<H+75&&x.x>-75&&x.x<W+75;});
+  powerups=powerups.filter(function(x){return !x.hit&&x.y<H+75&&x.x>-75&&x.x<W+75;});
   projectiles=projectiles.filter(function(x){return x.life>0&&x.x>-40&&x.x<W+40&&x.y>-40&&x.y<H+40;});
   chiliBombs=chiliBombs.filter(function(x){return x.state!=="done";});
   watermelons=watermelons.filter(function(x){return !x.exploded;});
@@ -2713,12 +2805,16 @@ function draw(){
 
   for(i=0;i<powerups.length;i++){
     var u=powerups[i];ctx.save();ctx.translate(u.x,u.y);
-    var glow=u.type==="speed"?"rgba(80,210,255,.48)":u.type==="ketchup"?"rgba(215,35,45,.42)":u.type==="chili"?"rgba(255,92,30,.45)":"rgba(255,213,74,.45)";
+    var glow=u.type==="speed"?"rgba(80,210,255,.48)":u.type==="life"?"rgba(255,80,110,.48)":u.type==="fire"?"rgba(255,120,30,.48)":u.type==="ammo"?"rgba(255,235,80,.48)":u.type==="ketchup"?"rgba(215,35,45,.42)":u.type==="chili"?"rgba(255,92,30,.45)":"rgba(255,213,74,.45)";
     ctx.fillStyle=glow;ctx.beginPath();ctx.arc(0,0,u.r+7,0,Math.PI*2);ctx.fill();
-    var powerupSpriteKey=(u.type==="speed")?"powerup.speed":"weapon."+u.type;
+    var isFieldPowerup=u.type==="speed"||u.type==="ammo"||u.type==="life"||u.type==="fire";
+    var powerupSpriteKey=isFieldPowerup?"powerup."+u.type:"weapon."+u.type;
     if(drawSprite(powerupSpriteKey,0,0,52,52,false,0)){
       // Externe Waffengrafik erfolgreich gezeichnet.
-    }else if(u.type==="mustard"){
+    }else if(u.type==="ammo"){ctx.fillStyle="#ffe04a";ctx.font="900 38px sans-serif";ctx.fillText("∞",0,0);}
+    else if(u.type==="life"){ctx.font="36px sans-serif";ctx.fillText("❤️",0,0);}
+    else if(u.type==="fire"){ctx.font="36px sans-serif";ctx.fillText("🔥",0,0);}
+    else if(u.type==="mustard"){
       fillRoundRect(-11,-13,22,28,6,"#ffd43b");fillRoundRect(-7,-22,14,11,3,"#f4f4f4");
       ctx.fillStyle="#d22f2f";ctx.fillRect(-7,-19,14,4);ctx.fillStyle="#232323";ctx.font="900 8px sans-serif";ctx.fillText("SENF",0,2);
     }else if(u.type==="ketchup"){ctx.font="34px sans-serif";ctx.fillText("🍅",0,0);}
@@ -3116,6 +3212,189 @@ if(key==="Escape"&&paused&&!e.repeat){
 },false);
 window.addEventListener("keyup",function(e){keys[e.key]=false;},false);
 
+
+/* =========================================================
+   CONTROLLER / GAMEPAD API
+   Linker Stick oder Steuerkreuz: bewegen
+   A / Kreuz: waagerecht in Blickrichtung schießen
+   B / Kreis: nach oben schießen
+   Start: Pause
+   Select / Zurück: im Pausemenü zum Titelbild
+   ========================================================= */
+function gamepadButtonPressed(gamepad,index){
+  return !!(gamepad.buttons[index]&&gamepad.buttons[index].pressed);
+}
+
+function gamepadButtonJustPressed(gamepad,index){
+  return gamepadButtonPressed(gamepad,index)&&previousGamepadButtons[index]!==true;
+}
+
+function storeGamepadButtons(gamepad){
+  previousGamepadButtons=gamepad.buttons.map(function(button){
+    return !!button.pressed;
+  });
+}
+
+function applyGamepadDeadzone(value,deadzone){
+  value=Number(value)||0;
+  if(Math.abs(value)<deadzone)return 0;
+  var direction=value<0?-1:1;
+  return direction*(Math.abs(value)-deadzone)/(1-deadzone);
+}
+
+function clearGamepadMovement(){
+  gamepadMoveX=0;
+  gamepadMoveY=0;
+}
+
+function findActiveGamepad(){
+  if(!navigator.getGamepads)return null;
+  var gamepads=navigator.getGamepads();
+
+  if(activeGamepadIndex!==null&&gamepads[activeGamepadIndex]){
+    return gamepads[activeGamepadIndex];
+  }
+
+  for(var i=0;i<gamepads.length;i++){
+    if(gamepads[i]){
+      activeGamepadIndex=gamepads[i].index;
+      previousGamepadButtons=[];
+      return gamepads[i];
+    }
+  }
+  return null;
+}
+
+function updateGamepad(dt){
+  var gamepad=findActiveGamepad();
+  if(!gamepad){
+    clearGamepadMovement();
+    return;
+  }
+
+  gamepadMenuCooldown=Math.max(0,gamepadMenuCooldown-dt);
+
+  var aJust=gamepadButtonJustPressed(gamepad,0);
+  var bJust=gamepadButtonJustPressed(gamepad,1);
+  var backJust=gamepadButtonJustPressed(gamepad,8);
+  var startJust=gamepadButtonJustPressed(gamepad,9);
+
+  if(logoSplash&&!logoSplash.classList.contains("hidden")){
+    clearGamepadMovement();
+    if(aJust||bJust||startJust){
+      ensureAudio();
+      closeLogoSplash();
+    }
+    storeGamepadButtons(gamepad);
+    return;
+  }
+
+  var stickX=applyGamepadDeadzone(gamepad.axes[0]||0,.18);
+  var stickY=applyGamepadDeadzone(gamepad.axes[1]||0,.18);
+
+  if(gamepadButtonPressed(gamepad,14))stickX=-1;
+  if(gamepadButtonPressed(gamepad,15))stickX=1;
+  if(gamepadButtonPressed(gamepad,12))stickY=-1;
+  if(gamepadButtonPressed(gamepad,13))stickY=1;
+
+  var startVisible=!startScreen.classList.contains("hidden");
+  var upgradeVisible=!upgradeScreen.classList.contains("hidden");
+  var gameOverVisible=!gameOverScreen.classList.contains("hidden");
+
+  if(startVisible){
+    clearGamepadMovement();
+    if(gamepadMenuCooldown<=0){
+      if(stickX<-.55){
+        ensureAudio();
+        moveStartMenu(-1);
+        gamepadMenuCooldown=.24;
+      }else if(stickX>.55){
+        ensureAudio();
+        moveStartMenu(1);
+        gamepadMenuCooldown=.24;
+      }
+    }
+    if(aJust||startJust){
+      ensureAudio();
+      activateStartMenuSelection();
+    }
+  }else if(upgradeVisible){
+    clearGamepadMovement();
+    if(gamepadMenuCooldown<=0){
+      if(stickX<-.55){
+        ensureAudio();
+        moveUpgradeMenu(-1);
+        gamepadMenuCooldown=.24;
+      }else if(stickX>.55){
+        ensureAudio();
+        moveUpgradeMenu(1);
+        gamepadMenuCooldown=.24;
+      }
+    }
+    if(aJust){
+      ensureAudio();
+      activateUpgradeMenuSelection();
+    }
+  }else if(paused){
+    clearGamepadMovement();
+    if(startJust){
+      togglePause();
+    }else if(backJust){
+      returnToStartScreen();
+    }
+  }else if(gameOverVisible){
+    clearGamepadMovement();
+    if(backJust){
+      returnToStartScreen();
+    }
+  }else if(running&&!betweenRounds){
+    gamepadMoveX=stickX<-.16?-1:(stickX>.16?1:0);
+    gamepadMoveY=stickY<-.16?-1:(stickY>.16?1:0);
+
+    /* Gewünschte vertauschte Schussbelegung:
+       B / Kreis = nach oben
+       A / Kreuz = waagerecht in Blickrichtung */
+    if(gamepadButtonPressed(gamepad,1)){
+      ensureAudio();
+      shoot("up");
+    }
+    if(gamepadButtonPressed(gamepad,0)){
+      ensureAudio();
+      shoot("look");
+    }
+    if(startJust){
+      togglePause();
+    }
+  }else{
+    clearGamepadMovement();
+  }
+
+  storeGamepadButtons(gamepad);
+}
+
+window.addEventListener("gamepadconnected",function(event){
+  activeGamepadIndex=event.gamepad.index;
+  previousGamepadButtons=[];
+  console.log("Controller verbunden:",event.gamepad.id);
+});
+
+window.addEventListener("gamepaddisconnected",function(event){
+  if(activeGamepadIndex===event.gamepad.index){
+    activeGamepadIndex=null;
+    previousGamepadButtons=[];
+    clearGamepadMovement();
+  }
+});
+
+function gamepadLoop(time){
+  var dt=Math.min(.05,Math.max(0,(time-gamepadLastTime)/1000));
+  gamepadLastTime=time;
+  updateGamepad(dt);
+  requestAnimationFrame(gamepadLoop);
+}
+
+requestAnimationFrame(gamepadLoop);
+
 /* =========================================================
    MOBILE FINGERSTEUERUNG
    Linke Bildschirmhälfte: Figur analog bewegen.
@@ -3125,7 +3404,7 @@ var movePointerId=null,firePointerId=null;
 var moveStartX=0,moveStartY=0;
 var touchMoveX=0,touchMoveY=0;
 var touchFireMode=null;
-var TOUCH_DEADZONE=5;
+var TOUCH_DEADZONE=12;
 
 function clearTouchMovement(){
   touchMoveX=0;touchMoveY=0;
@@ -3138,10 +3417,10 @@ function applyTouchMovement(clientX,clientY){
   var len=Math.sqrt(dx*dx+dy*dy);
   if(len<TOUCH_DEADZONE){clearTouchMovement();return;}
   touchMoveX=dx/len;touchMoveY=dy/len;
-  keys.ArrowLeft=touchMoveX<-.16;
-  keys.ArrowRight=touchMoveX>.16;
-  keys.ArrowUp=touchMoveY<-.16;
-  keys.ArrowDown=touchMoveY>.16;
+  keys.ArrowLeft=touchMoveX<-.28;
+  keys.ArrowRight=touchMoveX>.28;
+  keys.ArrowUp=touchMoveY<-.28;
+  keys.ArrowDown=touchMoveY>.28;
 }
 
 function playerClientPosition(){
@@ -3157,7 +3436,7 @@ function chooseTouchFireMode(clientX,clientY){
   var dx=clientX-pos.x,dy=clientY-pos.y;
   /* Nach unten wird bewusst nicht geschossen. Oberhalb der Figur gewinnt
      "oben"; ansonsten entscheidet links/rechts. */
-  if(dy<0&&Math.abs(dy)>Math.abs(dx)*.20)return "up";
+  if(dy<0&&Math.abs(dy)>Math.abs(dx)*.65)return "up";
   return dx<0?"left":"right";
 }
 
