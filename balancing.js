@@ -30,7 +30,7 @@ window.GAME_BALANCE = {
   player: {
     startLives: 3,
     maxDisplayedLives: 6,
-    baseSpeed: 260,
+    baseSpeed: 270,
     invulnerabilitySeconds: 1.8
   },
 
