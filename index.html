@@ -311,7 +311,7 @@ button:active{transform:translateY(4px);box-shadow:0 2px 0 #a98918}
       </div>
     </div>
   </div>
-  <div class="footer"><span id="footerNotice">Fiktives Arcade-Spiel ohne reale Marken oder Personen.</span><span class="release">Version 2.1 · 25.07.26 14:53</span></div>
+  <div class="footer"><span id="footerNotice">Fiktives Arcade-Spiel ohne reale Marken oder Personen.</span><span class="release">Version 2.1 · Vertikal · nummerierte Bosse/Projektile · Theme-Datei</span></div>
 </div>
 
 
@@ -436,13 +436,13 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const scoresRef = collection(db, "highscores");
 const themeText = window.themeText || ((path, fallback) => fallback);
-const activeTheme = window.ACTIVE_GAME_THEME || "discounter";
 const activeScoreTheme = String(window.ACTIVE_GAME_THEME || "discounter").replace(/[^a-z0-9_-]/gi, "") || "discounter";
 
 let allScores = [];
 let visibleScores = [];
 let currentScore = 0;
 let currentRound = 1;
+let currentGameDurationMinutes = 0;
 let currentGameCheated = false;
 let saving = false;
 let highlightedId = "";
@@ -592,9 +592,10 @@ async function loadScores() {
   }
 }
 
-window.prepareHallOfFame = function(score, round, cheated) {
+window.prepareHallOfFame = function(score, round, cheated, gameDurationMinutes) {
   currentScore = Math.max(0, Math.floor(Number(score) || 0));
   currentRound = Math.max(1, Math.floor(Number(round) || 1));
+  currentGameDurationMinutes = Math.max(0, Math.round((Number(gameDurationMinutes) || 0) * 100) / 100);
   currentGameCheated = cheated === true;
   saving = false;
   highlightedId = "";
@@ -636,12 +637,13 @@ async function saveScore() {
 
   try {
     const result = await addDoc(scoresRef, {
-  name,
-  score: currentScore,
-  cheated: currentGameCheated,
-  theme: activeTheme,
-  createdAt: serverTimestamp()
-});
+      name,
+      score: currentScore,
+      cheated: currentGameCheated,
+      theme: activeScoreTheme,
+      gameDurationMinutes: currentGameDurationMinutes,
+      createdAt: serverTimestamp()
+    });
     highlightedId = result.id;
     localStorage.setItem("discounterStrikePlayerName", name);
     saveButton.textContent = themeText("hallOfFame.saved","Gespeichert ✓");
@@ -771,6 +773,7 @@ var WORLD_W=900,WORLD_H=650;
 var W=WORLD_W,H=WORLD_H,DPR=1;
 var VIEW_W=WORLD_W,VIEW_H=WORLD_H,CAMERA_SCALE=1,CAMERA_X=0,CAMERA_Y=0;
 var running=false,paused=false,betweenRounds=false,lastTime=0;
+var activePlaySeconds=0;
 var score=0,lives=balanceNumber("player.startLives",3),maxLives=balanceNumber("player.startLives",3);
 var game={mode:"story",dayIndex:0,hour:7,stage:1,isBoss:false};
 var weekDays=themeText("calendar.weekDays",["Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag","Sonntag"]);
@@ -1410,7 +1413,7 @@ function finishStory(){
   finalText.innerHTML=themeFormat("gameOver.storyText","Du hast die <b>Reinigungsmaschine besiegt</b>, den Discounter bis 24:00 Uhr verteidigt und dabei <b>{score} Punkte</b> erreicht.",{score:Math.floor(score).toLocaleString("de-DE")});
   gameOverScreen.classList.remove("hidden");
   if(typeof window.prepareHallOfFame==="function"){
-    window.prepareHallOfFame(score,game.stage,roundCheated);
+    window.prepareHallOfFame(score,game.stage,roundCheated,Math.round((activePlaySeconds/60)*100)/100);
   }
 }
 
@@ -1550,7 +1553,7 @@ function advanceGameClock(){
 }
 
 function resetGame(mode){
-  score=0;lives=3;maxLives=3;
+  score=0;lives=3;maxLives=3;activePlaySeconds=0;
   resetGameClock(mode);
   godMode=false;cheatBuffer="";hallCheatBuffer="";roundCheated=false;
   ammoMultiplier=1;fireRateMultiplier=1;puddleResistance=1;
@@ -1689,7 +1692,7 @@ function endGame(){
   gameOverTitle.innerHTML="<b>geschlossen</b>";
   finalText.innerHTML="Du hast <b>"+Math.floor(score).toLocaleString("de-DE")+" Punkte</b> erreicht und bist bis <b>"+currentDayName()+", "+currentTimeLabel()+"</b> gekommen.";
   gameOverScreen.classList.remove("hidden");
-  if(typeof window.prepareHallOfFame==="function"){window.prepareHallOfFame(score,game.stage,roundCheated);}
+  if(typeof window.prepareHallOfFame==="function"){window.prepareHallOfFame(score,game.stage,roundCheated,Math.round((activePlaySeconds/60)*100)/100);}
 }
 
 function rectCircle(rx,ry,rw,rh,cx,cy,cr){
@@ -3081,7 +3084,10 @@ ctx.restore();
 function loop(t){
   if(!running)return;
   var dt=Math.min(.033,(t-lastTime)/1000);lastTime=t;
-  if(!paused&&!betweenRounds)update(dt);
+  if(!paused&&!betweenRounds){
+    activePlaySeconds+=dt;
+    update(dt);
+  }
   draw();requestAnimationFrame(loop);
 }
 
