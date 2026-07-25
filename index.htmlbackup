@@ -311,7 +311,7 @@ button:active{transform:translateY(4px);box-shadow:0 2px 0 #a98918}
       </div>
     </div>
   </div>
-  <div class="footer"><span id="footerNotice">Fiktives Arcade-Spiel ohne reale Marken oder Personen.</span><span class="release">Version 2.1 · 25.07.26 14:53</span></div>
+  <div class="footer"><span id="footerNotice">Fiktives Arcade-Spiel ohne reale Marken oder Personen.</span><span class="release">Version 2.1 · Vertikal · nummerierte Bosse/Projektile · Theme-Datei</span></div>
 </div>
 
 
@@ -436,8 +436,6 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const scoresRef = collection(db, "highscores");
 const themeText = window.themeText || ((path, fallback) => fallback);
-const activeTheme = window.ACTIVE_GAME_THEME || "discounter";
-const activeScoreTheme = String(window.ACTIVE_GAME_THEME || "discounter").replace(/[^a-z0-9_-]/gi, "") || "discounter";
 
 let allScores = [];
 let visibleScores = [];
@@ -482,7 +480,6 @@ function rankSymbol(rank, showCheated) {
 
 function scoresForMode(showCheated) {
   return allScores
-    .filter(entry => entry.theme === activeScoreTheme)
     .filter(entry => showCheated ? entry.cheated === true : entry.cheated !== true)
     .sort((a, b) => (b.score - a.score) || (a.createdAt - b.createdAt))
     .slice(0, 10);
@@ -575,9 +572,6 @@ async function loadScores() {
         name: String(data.name || "Unbekannt").slice(0, 20),
         score: Math.max(0, Math.floor(Number(data.score) || 0)),
         cheated: data.cheated === true,
-        // Alte Einträge ohne Theme-Feld stammen aus der ursprünglichen
-        // Discounter-Bestenliste und bleiben dort weiterhin sichtbar.
-        theme: String(data.theme || "discounter").replace(/[^a-z0-9_-]/gi, "") || "discounter",
         createdAt
       };
     });
@@ -636,12 +630,11 @@ async function saveScore() {
 
   try {
     const result = await addDoc(scoresRef, {
-  name,
-  score: currentScore,
-  cheated: currentGameCheated,
-  theme: activeTheme,
-  createdAt: serverTimestamp()
-});
+      name,
+      score: currentScore,
+      cheated: currentGameCheated,
+      createdAt: serverTimestamp()
+    });
     highlightedId = result.id;
     localStorage.setItem("discounterStrikePlayerName", name);
     saveButton.textContent = themeText("hallOfFame.saved","Gespeichert ✓");
